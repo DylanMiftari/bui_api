@@ -2,44 +2,42 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use App\Services\PlayerService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function register(Request $request){
-        $registerUserData = $request->validate([
-            'pseudo'=>'required|string',
-            'password'=>'required'
-        ]);
-        $user = User::create([
-            'pseudo' => $registerUserData['pseudo'],
-            'password' => Hash::make($registerUserData['password']),
-        ]);
+    public function register(RegisterRequest $request, PlayerService $playerService) {
+        $user = $playerService->createUser($request->pseudo, $request->password);
+        
         return response()->json([
-            'message' => 'User Created ',
+            "result" => "success",
+            "token" => $playerService->getToken($user)
         ]);
     }
 
-    public function login(Request $request){
-        $loginUserData = $request->validate([
-            'pseudo'=>'required|string',
-            'password'=>'required'
-        ]);
-        $user = User::where('pseudo',$loginUserData['pseudo'])->first();
-        if(!$user || !Hash::check($loginUserData['password'],$user->password)){
+    public function login(LoginRequest $request, PlayerService $playerService){
+        $user = User::where('pseudo', $request->pseudo)->firstOrFail();
+
+        if(!$playerService->checkPassword($user, $request->password)) {
             return response()->json([
-                'message' => 'Invalid Credentials'
-            ],401);
+                "result" => "error",
+                "error" => "Invalid Credentials"
+            ], 401);
         }
-        $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
+
         return response()->json([
-            'access_token' => $token,
+            "result" => "success",
+            "token" => $playerService->getToken($user)
         ]);
     }
 
     public function logout(){
-        return "koukou";
+        return "success";
     }
 }
