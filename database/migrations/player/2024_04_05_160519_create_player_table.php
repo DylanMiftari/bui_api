@@ -19,6 +19,7 @@ return new class extends Migration
             $table->float("playerMoney", total: 20)->default(0);
             $table->integer("city_id", unsigned: true)->default(1)->nullable();
             $table->foreign("city_id")->references("id")->on("city")->restrictOnDelete()->restrictOnUpdate();
+            $table->string("remember_token", 100)->nullable();
             $table->timestamps();
         });
     }
