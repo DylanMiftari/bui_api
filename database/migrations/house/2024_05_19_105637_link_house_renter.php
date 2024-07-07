@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table("home", function(Blueprint $table) {
             $table->unsignedBigInteger("renterId")->nullable();
             $table->foreign("renterId")->references("id")->on("player")->restrictOnDelete()->restrictOnUpdate();
-            $table->float("rent", total: 20)->nullable();
+            $table->float("rent", total: 20)->nullable()->comment("weekly");
         });
     }
 

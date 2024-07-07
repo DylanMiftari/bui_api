@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\House;
 use App\Models\User;
+use App\Models\Home;
+use App\Models\Mine;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
@@ -12,6 +15,17 @@ class PlayerService {
         $user = User::create([
             "pseudo" => $pseudo,
             "password" => Hash::make($password)
+        ]);
+        $mine = Mine::create([
+            "player_id" => $user->id
+        ]);
+        $house = House::create([
+            "houseTypeId" => 1 // Tipi houseType id
+        ]);
+        $home = Home::create([
+            "id_house" => $house->id,
+            "id_player" => $user->id,
+            "rent" => config("house.default_house_type_1_rent")
         ]);
         return $user;
     }
