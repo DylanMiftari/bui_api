@@ -27,11 +27,7 @@ class AuthController extends Controller
         if(!$playerService->checkPassword($user, $request->password)) {
             return response()->json([
                 "result" => "error",
-                "errors" => [
-                    "credentials" => [
-                        "Votre mot de passe n'est pas correct"
-                    ]
-                ]
+                "message" => "Votre mot de passe est incorrect"
             ], 401);
         }
 
