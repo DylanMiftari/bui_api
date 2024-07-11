@@ -26,4 +26,16 @@ class LoginRequest extends FormRequest
             "password" => ["required", "string"]
         ];
     }
+
+    /**
+     * Get the validation error message
+     */
+    public function messages()
+    {
+        return [
+            "pseudo.required" => "Vous devez entrer un pseudo",
+            "pseudo.exists" => "Ce pseudo n'existe pas",
+            "password.required" => "Vos devez entrer votre mot de passe"
+        ];
+    }
 }

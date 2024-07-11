@@ -23,7 +23,24 @@ class RegisterRequest extends FormRequest
     {
         return [
             "pseudo" => ["required", "string", "min:3", "unique:player,pseudo"],
-            "password" => ["required", "string", "min:3"]
+            "password" => ["required", "string", "min:3", "confirmed"],
+            "password_confirmation" => ["required", "string"]
+        ];
+    }
+
+    /**
+     * Get the validation error message
+     */
+    public function messages()
+    {
+        return [
+            'pseudo.required' => 'Un pseudo est requis',
+            'pseudo.min' => 'Votre pseudo doit contenir au moins 3 caractères.',
+            'pseudo.unique' => 'Ce pseudo est déjà utilisé',
+            'password.required' => 'Un mot de passe est requis',
+            'password.min' => 'Votre mot de passe doit faire au moins 3 caractères',
+            'password.confirmed' => 'Votre mot de passe et la confirmation ne correspondent pas',
+            'password_confirmation.required' => 'Vos devez confirmer votre mot de passe'
         ];
     }
 }
