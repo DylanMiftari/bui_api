@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger("factoryId");
             $table->foreign("factoryId")->references("id")->on("factory")->restrictOnDelete()->restrictOnUpdate();
 
-            $table->unsignedBigInteger("currentRecipeId");
+            $table->unsignedBigInteger("currentRecipeId")->nullable();
             $table->foreign("currentRecipeId")->references("id")->on("recipe")->restrictOnDelete()->restrictOnUpdate();
 
             $table->timestamps();

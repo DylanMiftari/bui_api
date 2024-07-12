@@ -14,8 +14,11 @@ return new class extends Migration
         Schema::create('mafia', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedSmallInteger("level");
+            $table->unsignedSmallInteger("level")->default(1);
             $table->foreign("level")->references("level")->on("mafialevel")->restrictOnDelete()->restrictOnUpdate();
+
+            $table->unsignedBigInteger("companyId");
+            $table->foreign("companyId")->references("id")->on("company")->restrictOnDelete()->restrictOnUpdate();
 
             $table->timestamps();
         });
