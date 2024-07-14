@@ -8,6 +8,7 @@ use App\Http\Requests\LoginRequest;
 use App\Models\User;
 use App\Services\BankService;
 use App\Services\CasinoService;
+use App\Services\ErrorService;
 use App\Services\EstateService;
 use App\Services\FactoryService;
 use App\Services\MafiaService;
@@ -17,6 +18,13 @@ use Illuminate\Support\Facades\Auth;
 
 class CompanyController extends Controller
 {
+
+    protected ErrorService $errorService;
+
+    public function __construct(ErrorService $errorService) {
+        $this->errorService = $errorService;
+    }
+
     public function index() {
         return Auth::user()->companies;
     }
@@ -24,10 +32,7 @@ class CompanyController extends Controller
     public function createCompany(CreateCompanyRequest $request, BankService $bankService, CasinoService $casinoService, 
     EstateService $estateService, FactoryService $factoryService, MafiaService $mafiaService, SecurityService $securityService) {
         if(count(Auth::user()->companies) >= config("player.max_companies")) { 
-            return response()->json([
-                "status" => "error",
-                "message" => "Vous avez déjà construit le nombre maximum d'entreprises : ".config("player.max_companies")
-            ]);
+            return $this->errorService->errorResponse("Vous avez déjà construit le nombre maximum d'entreprises : ".config("player.max_companies"));
         }
 
         $user = User::find(Auth::id());
