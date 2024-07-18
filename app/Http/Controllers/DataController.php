@@ -33,7 +33,8 @@ class DataController extends Controller
             "mafialevel" => [],
             "estatelevel" => [],
             "factorylevel" => [],
-            "securitylevel" => []
+            "securitylevel" => [],
+            "new_mine_prices" => config("mine.newMinePrice"),
         ];
 
         // company level

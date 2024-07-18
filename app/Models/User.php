@@ -33,9 +33,15 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'companies',
+        'mines'
     ];
 
     public function companies(): HasMany {
         return $this->hasMany(Company::class, "id_player", "id");
+    }
+
+    public function mines(): HasMany {
+        return $this->hasMany(Mine::class, "player_id", "id");
     }
 }
