@@ -12,6 +12,7 @@ use App\Services\ErrorService;
 use App\Services\EstateService;
 use App\Services\FactoryService;
 use App\Services\MafiaService;
+use App\Services\MoneyService;
 use App\Services\SecurityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,12 +31,17 @@ class CompanyController extends Controller
     }
 
     public function createCompany(CreateCompanyRequest $request, BankService $bankService, CasinoService $casinoService, 
-    EstateService $estateService, FactoryService $factoryService, MafiaService $mafiaService, SecurityService $securityService) {
+    EstateService $estateService, FactoryService $factoryService, MafiaService $mafiaService, SecurityService $securityService,
+    MoneyService $moneyService) {
+
+        $user = User::find(Auth::id());
+
         if(count(Auth::user()->companies) >= config("player.max_companies")) { 
             return $this->errorService->errorResponse("Vous avez déjà construit le nombre maximum d'entreprises : ".config("player.max_companies"));
         }
-
-        $user = User::find(Auth::id());
+        if(!$moneyService->checkMoney($user, config("company.creationPrice"))) {
+            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour créer une entreprise");
+        }
 
         switch($request->get("company_type")) {
             case "bank":

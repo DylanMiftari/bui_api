@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BankLevel;
+use App\Models\CasinoLevel;
 use App\Models\Company;
-use Illuminate\Http\Request;
+use App\Models\EstateLevel;
+use App\Models\FactoryLevel;
+use App\Models\MafiaLevel;
+use App\Models\SecurityLevel;
 
 class DataController extends Controller
 {
@@ -12,7 +17,7 @@ class DataController extends Controller
      * @return void
      */
     public function index() {
-        return response()->json([
+        $res = [
             "maxCompaniesPerPlayer" => config("player.max_companies", 3),
             "companyCreationPrice" => config("company.creationPrice", 2500),
             "companyTypes" => [
@@ -22,7 +27,25 @@ class DataController extends Controller
                 Company::COMPANY_TYPE[3] => Company::FRENCH_COMPANY_TYPE[3],
                 Company::COMPANY_TYPE[4] => Company::FRENCH_COMPANY_TYPE[4],
                 Company::COMPANY_TYPE[5] => Company::FRENCH_COMPANY_TYPE[5],
-            ]
-        ]);
+            ],
+            "casinolevel" => [],
+            "banklevel" => [],
+            "mafialevel" => [],
+            "estatelevel" => [],
+            "factorylevel" => [],
+            "securitylevel" => []
+        ];
+
+        // company level
+        for($i=1; $i<= config("company.maxLevel"); $i++) {
+            $res["casinolevel"]["l".$i] = CasinoLevel::find($i)->toArray();
+            $res["banklevel"]["l".$i] = BankLevel::find($i)->toArray();
+            $res["mafialevel"]["l".$i] = MafiaLevel::find($i)->toArray();
+            $res["estatelevel"]["l".$i] = EstateLevel::find($i)->toArray();
+            $res["factorylevel"]["l".$i] = FactoryLevel::find($i)->toArray();
+            $res["securitylevel"]["l".$i] = SecurityLevel::find($i)->toArray();
+        }
+
+        return response()->json($res);
     }
 }
