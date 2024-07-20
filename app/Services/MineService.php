@@ -18,8 +18,4 @@ class MineService {
         ]);
     }
 
-    public function remainTimeInMintes(Mine $mine): int {
-        return Carbon::now()->diffInMinutes(Carbon::createFromFormat("Y-m-d H:i:s", $mine->startedAt));
-    }
-
 }

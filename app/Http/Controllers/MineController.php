@@ -26,8 +26,6 @@ class MineController extends Controller
             return $this->errorService->errorResponse("Ce n'est pas votre mine", 403);
         }
         $res = $mine->toArray();
-        $res["resource"] = $mine->resource;
-        $res["remainTimeInMinutes"] = $this->mineService->remainTimeInMintes($mine);
 
         return $res;
     }
