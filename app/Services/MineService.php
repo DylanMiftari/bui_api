@@ -18,4 +18,9 @@ class MineService {
         ]);
     }
 
+    public function upgradeMine(Mine $mine): void {
+        $mine->level++;
+        $mine->save();
+    }
+
 }

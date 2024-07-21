@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mine;
+use App\Models\MineLevel;
 use App\Models\Resource;
 use App\Models\User;
 use App\Services\ErrorService;
@@ -23,14 +24,27 @@ class MineController extends Controller
     }
 
     public function getData(Mine $mine) {
-        if($mine->player_id !== Auth::id()) {
-            return $this->errorService->errorResponse("Ce n'est pas votre mine", 403);
-        }
         $res = $mine->toArray();
         
-        $res["mineable_resources"] = Resource::where("levelToMine", $res["level"])->get();
+        $res["mineable_resources"] = Resource::where("levelToMine", "<=", $res["level"])->get();
 
         return $res;
+    }
+
+    public function upgradeMine(Mine $mine, MoneyService $moneyService) {
+        $user = User::find(Auth::id());
+        $mineLevel = MineLevel::find($mine->level);
+
+        if(!$moneyService->checkMoney($user, $mineLevel->priceForNextLevel)) {
+            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour améliorer votre mine", 422);
+        }
+        $moneyService->pay($user, $mineLevel->priceForNextLevel);
+        $this->mineService->upgradeMine($mine);
+
+        return response()->json([
+            "status" => "success",
+            "mine" => $mine
+        ]);
     }
 
     public function buyNewMine(MoneyService $moneyService) {
