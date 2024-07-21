@@ -8,6 +8,7 @@ use App\Models\Company;
 use App\Models\EstateLevel;
 use App\Models\FactoryLevel;
 use App\Models\MafiaLevel;
+use App\Models\MineLevel;
 use App\Models\SecurityLevel;
 
 class DataController extends Controller
@@ -28,6 +29,7 @@ class DataController extends Controller
                 Company::COMPANY_TYPE[4] => Company::FRENCH_COMPANY_TYPE[4],
                 Company::COMPANY_TYPE[5] => Company::FRENCH_COMPANY_TYPE[5],
             ],
+            "minelevel" => MineLevel::all()->toArray(),
             "casinolevel" => [],
             "banklevel" => [],
             "mafialevel" => [],

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mine;
+use App\Models\Resource;
 use App\Models\User;
 use App\Services\ErrorService;
 use App\Services\MineService;
@@ -26,6 +27,8 @@ class MineController extends Controller
             return $this->errorService->errorResponse("Ce n'est pas votre mine", 403);
         }
         $res = $mine->toArray();
+        
+        $res["mineable_resources"] = Resource::where("levelToMine", $res["level"])->get();
 
         return $res;
     }

@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger("id")->primary();
             $table->string("name", length: 50);
             $table->float("marketPrice", total: 20)->comment("Price for 0.1kg");
+            $table->integer("timeToMine", unsigned: true)->nullable()->comment("in minutes | null = not mineable");
+            $table->float("mineQuantity", total: 15)->nullable()->comment("in kg | null = not mineable");
         });
     }
 
