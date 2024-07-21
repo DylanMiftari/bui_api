@@ -30,7 +30,9 @@ class Mine extends Model
         if($this->startedAt === null) {
             return null;
         }
-        return Carbon::now()->diffInMinutes(Carbon::createFromFormat("Y-m-d H:i:s", $this->startedAt), false);
+        $startedAt = Carbon::createFromFormat("Y-m-d H:i:s", $this->startedAt);
+        $endDate = $startedAt->addMinutes($this->resource->timeToMine);
+        return Carbon::now()->diffInMinutes($endDate, false);
     }
 
     public function getResourceAttribute() {

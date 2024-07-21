@@ -37,6 +37,7 @@ class DataController extends Controller
             "factorylevel" => [],
             "securitylevel" => [],
             "new_mine_prices" => config("mine.newMinePrice"),
+            "max_mine_level" => config("mine.maxLevel"),
         ];
 
         // company level
