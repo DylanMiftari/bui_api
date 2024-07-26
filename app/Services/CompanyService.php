@@ -17,7 +17,8 @@ class CompanyService {
         $company = Company::create([
             "name" => $name,
             "id_player" => $user->id,
-            "company_type" => $type
+            "company_type" => $type,
+            "city_id" => $user->city_id
         ]);
         $this->moneyService->pay($user, config("company.creationPrice"));
         return $company;
