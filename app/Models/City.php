@@ -17,4 +17,8 @@ class City extends Model
     public function users(): HasMany {
         return $this->hasMany(User::class, "city_id", "id");
     }
+
+    public function companies(): HasMany {
+        return $this->hasMany(Company::class, "city_id", "id");
+    }
 }

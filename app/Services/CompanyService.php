@@ -24,4 +24,9 @@ class CompanyService {
         return $company;
     }
 
+    public function desactivateCompany(Company $company) {
+        $company->activated = false;
+        $company->save();
+    }
+
 }

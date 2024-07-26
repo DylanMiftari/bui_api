@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command("player-taxes")->weekly(); // Sunday at 00:00
+        $schedule->command("company-taxes")->weekly(); // Sunday at 00:00
     }
 
     /**
