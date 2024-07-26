@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
@@ -38,7 +39,8 @@ class User extends Authenticatable
         'password',
         'remember_token',
         'companies',
-        'mines'
+        'mines',
+        "city"
     ];
 
     public function companies(): HasMany {
@@ -47,6 +49,10 @@ class User extends Authenticatable
 
     public function mines(): HasMany {
         return $this->hasMany(Mine::class, "player_id", "id");
+    }
+
+    public function city(): HasOne {
+        return $this->hasOne(City::class, "id", "city_id");
     }
 
     public function resources(): HasManyThrough

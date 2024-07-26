@@ -14,6 +14,7 @@ class PlayerController extends Controller
             "has_full_companies" => count($player->companies) >= config("player.max_companies"),
             "mines" => $player->mines,
             "has_full_mines" => count($player->mines) >= config("player.max_mines"),
+            "city" => $player->city
         ];
 
         return $res;

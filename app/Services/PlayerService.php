@@ -39,4 +39,9 @@ class PlayerService {
         return Hash::check($password, $user->password);
     }
 
+    function noPayTaxes(User $user): void {
+        $user->city_id = 1;
+        $user->save();
+    }
+
 }

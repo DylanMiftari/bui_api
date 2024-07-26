@@ -21,6 +21,7 @@ class CityTableSeeder extends Seeder
                 "country" => "Sénégal",
                 "maxLevelOfCorp" => 2,
                 "weeklyTaxes" => 500,
+                "weeklyCompanyTaxes" => 1000,
                 "rank" => 1
             ],
             [
@@ -28,7 +29,8 @@ class CityTableSeeder extends Seeder
                 "name" => "Las Vegas",
                 "country" => "États-Unis",
                 "maxLevelOfCorp" => 4,
-                "weeklyTaxes" => 30000,
+                "weeklyTaxes" => 7500,
+                "weeklyCompanyTaxes" => 25000,
                 "rank" => 3
             ],
             [
@@ -36,7 +38,8 @@ class CityTableSeeder extends Seeder
                 "name" => "Paris",
                 "country" => "France",
                 "maxLevelOfCorp" => 5,
-                "weeklyTaxes" => 45000,
+                "weeklyTaxes" => 13500,
+                "weeklyCompanyTaxes" => 40000,
                 "rank" => 4
             ],
             [
@@ -44,7 +47,8 @@ class CityTableSeeder extends Seeder
                 "name" => "New York",
                 "country" => "États-Unis",
                 "maxLevelOfCorp" => 6,
-                "weeklyTaxes" => 50000,
+                "weeklyTaxes" => 20000,
+                "weeklyCompanyTaxes" => 60000,
                 "rank" => 5
             ]
         ]);
