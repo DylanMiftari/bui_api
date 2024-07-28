@@ -10,6 +10,12 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
 class PlayerService {
+
+    protected CityService $cityService;
+
+    public function __construct(CityService $cityService) {
+        $this->cityService = $cityService;
+    }
     
     function createUser(string $pseudo, string $password): User {
         $user = User::create([
@@ -42,6 +48,13 @@ class PlayerService {
     function noPayTaxes(User $user): void {
         $user->city_id = 1;
         $user->save();
+    }
+
+    // Check et potentielle modification à faire quand le joueur se connecte
+    function beforeLoginCheck(User $user): void {
+        if(Carbon::now() >= $user->endTravel) {
+            $this->cityService->endTravel($user);
+        }
     }
 
 }

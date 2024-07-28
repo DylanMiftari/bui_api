@@ -38,6 +38,9 @@ class DataController extends Controller
             "securitylevel" => [],
             "new_mine_prices" => config("mine.newMinePrice"),
             "max_mine_level" => config("mine.maxLevel"),
+            "change_city_cost" => config("city.change_cost"),
+            "default_travel_time" => config("city.default_travel_time"),
+            "travel_tier_multiplicator" => config("city.travel_tier_multiplicator")
         ];
 
         // company level

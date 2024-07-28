@@ -19,6 +19,8 @@ class AuthController extends Controller
     }
     public function register(RegisterRequest $request, PlayerService $playerService) {
         $user = $playerService->createUser($request->pseudo, $request->password);
+
+        $playerService->beforeLoginCheck($user);
         
         return response()->json([
             "result" => "success",
@@ -32,6 +34,8 @@ class AuthController extends Controller
         if(!$playerService->checkPassword($user, $request->password)) {
             return $this->errorService->errorResponse("Votre mot de passe est incorrect", 401);
         }
+
+        $playerService->beforeLoginCheck($user);
 
         return response()->json([
             "result" => "success",

@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Services\PlayerService;
 use Illuminate\Support\Facades\Auth;
 
 class PlayerController extends Controller
 {
-    public function me() {
-        $player = Auth::user();
+    public function me(PlayerService $playerService) {
+        $player = User::find(Auth::id());
+
+        $playerService->beforeLoginCheck($player);
+
         $res = [
             "player" => $player,
             "companies" => $player->companies,
