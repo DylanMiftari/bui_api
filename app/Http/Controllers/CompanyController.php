@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateBankRequest;
 use App\Http\Requests\CreateCompanyRequest;
 use App\Http\Requests\LoginRequest;
+use App\Models\Company;
 use App\Models\User;
 use App\Services\BankService;
 use App\Services\CasinoService;
@@ -28,6 +29,13 @@ class CompanyController extends Controller
 
     public function index() {
         return Auth::user()->companies;
+    }
+
+    public function show(Company $company) {
+        if($company->id_player !== Auth::id()) {
+            return $this->errorService->errorResponse("Cette entreprise ne vous appartient pas", 403);
+        }
+        return $company;
     }
 
     public function createCompany(CreateCompanyRequest $request, BankService $bankService, CasinoService $casinoService, 
