@@ -29,4 +29,9 @@ class CompanyService {
         $company->save();
     }
 
+    public function upgradeCompany(Company $company) {
+        $company->companylevel += 1;
+        $company->save();
+    }
+
 }

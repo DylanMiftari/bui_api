@@ -6,9 +6,11 @@ use App\Http\Requests\CreateBankRequest;
 use App\Http\Requests\CreateCompanyRequest;
 use App\Http\Requests\LoginRequest;
 use App\Models\Company;
+use App\Models\CompanyLevel;
 use App\Models\User;
 use App\Services\BankService;
 use App\Services\CasinoService;
+use App\Services\CompanyService;
 use App\Services\ErrorService;
 use App\Services\EstateService;
 use App\Services\FactoryService;
@@ -22,9 +24,11 @@ class CompanyController extends Controller
 {
 
     protected ErrorService $errorService;
+    protected CompanyService $companyService;
 
-    public function __construct(ErrorService $errorService) {
+    public function __construct(ErrorService $errorService, CompanyService $companyService) {
         $this->errorService = $errorService;
+        $this->companyService = $companyService;
     }
 
     public function index() {
@@ -77,6 +81,25 @@ class CompanyController extends Controller
         return response()->json([
             "result" => "success",
             "company" => $company
+        ]);
+    }
+
+    public function upgrade(Company $company, MoneyService $moneyService) {
+        $companyLevel = CompanyLevel::find($company->companylevel);
+        $user = User::find(Auth::id());
+
+        if($companyLevel->priceForNextLevel === null) {
+            return $this->errorService->errorResponse("Votre entreprise est déjà au niveau maximum", 422);
+        }
+        if(!$moneyService->checkMoney($user, $companyLevel->priceForNextLevel)) {
+            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour améliorer votre entreprises", 422);
+        }
+
+        $this->companyService->upgradeCompany($company);
+        $moneyService->pay($user, $companyLevel->priceForNextLevel);
+
+        return response()->json([
+            "status" => "success"
         ]);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BankLevel;
 use App\Models\CasinoLevel;
 use App\Models\Company;
+use App\Models\CompanyLevel;
 use App\Models\EstateLevel;
 use App\Models\FactoryLevel;
 use App\Models\MafiaLevel;
@@ -40,7 +41,8 @@ class DataController extends Controller
             "max_mine_level" => config("mine.maxLevel"),
             "change_city_cost" => config("city.change_cost"),
             "default_travel_time" => config("city.default_travel_time"),
-            "travel_tier_multiplicator" => config("city.travel_tier_multiplicator")
+            "travel_tier_multiplicator" => config("city.travel_tier_multiplicator"),
+            "companylevels" => CompanyLevel::all()
         ];
 
         // company level
