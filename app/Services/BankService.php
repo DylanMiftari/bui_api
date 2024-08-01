@@ -22,4 +22,13 @@ class BankService extends CompanyService {
         return $company;
     }
 
+    public function editBank(Bank $bank, float $accountMaintenanceCost, float $transferCost, float $maxAccountMoney,
+    float $maxAccountResource) {
+        $bank->accountMaintenanceCost = $accountMaintenanceCost;
+        $bank->transferCost = $transferCost;
+        $bank->maxAccountMoney = $maxAccountMoney;
+        $bank->maxAccountResource = $maxAccountResource;
+        $bank->save();
+    }
+
 }

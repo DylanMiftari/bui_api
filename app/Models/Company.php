@@ -31,4 +31,23 @@ class Company extends Model
     public function user(): HasOne {
         return $this->hasOne(User::class, "id", "id_player");
     }
+
+    public function bank(): HasOne {
+        return $this->hasOne(Bank::class, "idCompany", "id");
+    }
+    public function casino(): HasOne {
+        return $this->hasOne(Casino::class, "companyId", "id");
+    }
+    public function factory(): HasOne {
+        return $this->hasOne(Factory::class, "companyId", "id");
+    }
+    public function estateAgency(): HasOne {
+        return $this->hasOne(Estate::class, "companyId", "id");
+    }
+    public function mafia(): HasOne {
+        return $this->hasOne(Mafia::class, "companyId", "id");
+    }
+    public function security(): HasOne {
+        return $this->hasOne(Security::class, "companyId", "id");
+    }
 }
