@@ -28,6 +28,10 @@ class BankController extends Controller
         return $company->bank()->with("banklevel")->first();
     }
 
+    public function getAccounts(Bank $bank) {
+        return $bank->bankAccounts()->with(["player", "bankResourceAccount"])->get();
+    }
+
     public function edit(EditBankRequest $request, Bank $bank) {
         $bankLevel = BankLevel::find($bank->level);
         if($request->input("maxAccountMoney") > $bankLevel->maxMoneyAccount) {

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Bank extends Model
@@ -29,5 +30,9 @@ class Bank extends Model
 
     public function company(): HasOne {
         return $this->hasOne(Company::class, "id", "idCompany");
+    }
+
+    public function bankAccounts(): HasMany {
+        return $this->hasMany(BankAccount::class, "bankId", "id");
     }
 }
