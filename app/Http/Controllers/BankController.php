@@ -9,6 +9,7 @@ use App\Models\BankLevel;
 use App\Models\Company;
 use App\Services\BankService;
 use App\Services\ErrorService;
+use App\Services\WithService;
 use Illuminate\Http\Request;
 
 class BankController extends Controller
@@ -33,20 +34,11 @@ class BankController extends Controller
         return $bank->bankAccounts()->with(["player", "bankResourceAccount"])->get();
     }
 
-    public function getAccountTransaction(Request $request, BankAccount $bankAccount) {
+    public function getAccountTransaction(Request $request, BankAccount $bankAccount, WithService $withService) {
         $query = BankAccount::where("id", $bankAccount->id);
         $with = $request->input("with");
 
-        if($with !== null) {
-            $withArray = explode(",", $with);
-
-            if(in_array("transactions", $withArray)) {
-                $query = $query->with("transactions");
-            }
-            if(in_array("player", $withArray)) {
-                $query = $query->with("player");
-            }
-        }
+        $query = $withService->with($query, $with);
 
         return $query->first();
     }

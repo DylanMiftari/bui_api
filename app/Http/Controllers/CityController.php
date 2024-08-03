@@ -31,7 +31,7 @@ class CityController extends Controller
         $user = User::find(Auth::id());
 
         return Company::where("city_id", $user->city_id)->where("activated", 1)->with("user")
-            ->orderByDesc("id")->get();
+            ->orderByDesc("companylevel")->orderByDesc("id")->get();
     }
 
     public function change(ChangeCityRequest $request, MoneyService $moneyService) {

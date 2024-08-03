@@ -23,4 +23,14 @@ class CasinoService extends CompanyService {
         return $company;
     }
 
+    public function updateTicketPrice(Casino $casino, float | null $ticketPrice, float | null $VIPTicketPrice) {
+        if($ticketPrice !== null) {
+            $casino->ticketPrice = $ticketPrice;
+        }
+        if($VIPTicketPrice !== null) {
+            $casino->VIPTicketPrice = $VIPTicketPrice;
+        }
+        $casino->save();
+    }
+
 }
