@@ -20,4 +20,12 @@ class BankAccount extends Model
     public function bankResourceAccount(): HasMany {
         return $this->hasMany(BankResourceAccount::class, "bankAccountId", "id");
     }
+
+    public function transactions(): HasMany {
+        return $this->hasMany(BankAccountTransaction::class, "bankAccountId", "id");
+    }
+
+    public function bank(): HasOne {
+        return $this->hasOne(Bank::class, "id", "bankId");
+    }
 }
