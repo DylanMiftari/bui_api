@@ -26,6 +26,7 @@ class SecurityCompanyLevelSeeder extends Seeder
                 "hasCyberDefense" => false,
                 "hasAntiAISystem" => false,
                 "hasContainmentSystem" => false,
+                "distance_multiplicator" => null,
             ],
             [
                 "level" => 2,
@@ -39,6 +40,7 @@ class SecurityCompanyLevelSeeder extends Seeder
                 "hasCyberDefense" => false,
                 "hasAntiAISystem" => false,
                 "hasContainmentSystem" => false,
+                "distance_multiplicator" => 2,
             ],
             [
                 "level" => 3,
@@ -52,6 +54,7 @@ class SecurityCompanyLevelSeeder extends Seeder
                 "hasCyberDefense" => false,
                 "hasAntiAISystem" => false,
                 "hasContainmentSystem" => false,
+                "distance_multiplicator" => 2,
             ],
             [
                 "level" => 4,
@@ -65,6 +68,7 @@ class SecurityCompanyLevelSeeder extends Seeder
                 "hasCyberDefense" => true,
                 "hasAntiAISystem" => false,
                 "hasContainmentSystem" => false,
+                "distance_multiplicator" => 1.7,
             ],
             [
                 "level" => 5,
@@ -78,6 +82,7 @@ class SecurityCompanyLevelSeeder extends Seeder
                 "hasCyberDefense" => true,
                 "hasAntiAISystem" => true,
                 "hasContainmentSystem" => false,
+                "distance_multiplicator" => 1.5,
             ],
             [
                 "level" => 6,
@@ -91,6 +96,7 @@ class SecurityCompanyLevelSeeder extends Seeder
                 "hasCyberDefense" => true,
                 "hasAntiAISystem" => true,
                 "hasContainmentSystem" => true,
+                "distance_multiplicator" => 1.2,
             ],
         ]);
     }

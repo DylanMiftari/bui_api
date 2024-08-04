@@ -74,6 +74,59 @@ class DataController extends Controller
             "estate_robot_decrease_duration" => config("estate.robot_construction.decrease_duration"),
             "estate_robot_2_increase_price" => config("estate.robot_2_construction.increase_price"),
             "estate_robot_2_decrease_duration" => config("estate.robot_2_construction.decrease_duration"),
+
+            "security" => [
+                "house_alarm_decrease_chance" => config("security.alarm.house.decrease_chance"),
+                "house_alarm_decrease_robed_quantity_min" => config("security.alarm.house.decrease_robed_quantity_min"),
+                "house_alarm_decrease_robed_quantity_max" => config("security.alarm.house.decrease_robed_quantity_max"),
+                "company_alarm_decrease_chance" => config("security.alarm.company.decrease_chance"),
+                "company_alarm_decrease_robed_quantity_min" => config("security.alarm.company.decrease_robed_quantity_min"),
+                "company_alarm_decrease_robed_quantity_max" => config("security.alarm.company.decrease_robed_quantity_max"),
+
+                "pepper_spray_decrease_chance" => config("security.pepperSpray.decrease_chance"),
+                "pepper_spray_decrease_robed_quantity" => config("security.pepperSpray.decrease_robed_quantity"),
+
+                "bank_gas_dispenser_decrease_robed_quantity" => config("security.gas_dispenser.bank.decrease_robed_quantity"),
+                "bank_gas_dispenser_gas_per_use" => config("security.gas_dispenser.bank.gas_per_use"),
+                "company_gas_dispenser_decrease_robed_quantity" => config("security.gas_dispenser.company.decrease_robed_quantity"),
+                "company_gas_dispenser_gas_per_use" => config("security.gas_dispenser.company.gas_per_use"),
+
+                "reinforced_door_chance_divider" => config("security.reinforced_door.chance_divider"),
+
+                "house_bodyguard_chance_divider" => config("security.bodyguard.house.chance_divider"),
+                "house_bodyguard_duration" => config("security.bodyguard.house.duration"),
+                "player_bodyguard_chance_divider" => config("security.bodyguard.player.chance_divider"),
+                "player_bodyguard_duration" => config("security.bodyguard.player.duration"),
+
+                "bank_security_guard_max_member" => config("security.securityguard.bank.max_member"),
+                "bank_security_guard_duration" => config("security.securityguard.bank.duration"),
+                "bank_security_guard_first_members_count" => config("security.securityguard.bank.first_members_count"),
+                "bank_security_guard_first_decrease_chance" => config("security.securityguard.bank.first_decrease_chance"),
+                "bank_security_guard_second_decrease_chance" => config("security.securityguard.bank.second_decrease_chance"),
+                "bank_security_guard_first_decrease_robed_quantity" => config("security.securityguard.bank.first_decrease_robed_quantity"),
+                "bank_security_guard_second_decrease_robed_quantity" => config("security.securityguard.bank.second_decrease_robed_quantity"),
+
+                "company_security_guard_max_member" => config("security.securityguard.company.max_member"),
+                "company_security_guard_duration" => config("security.securityguard.company.duration"),
+                "company_security_guard_first_members_count" => config("security.securityguard.company.first_members_count"),
+                "company_security_guard_first_decrease_chance" => config("security.securityguard.company.first_decrease_chance"),
+                "company_security_guard_second_decrease_chance" => config("security.securityguard.company.second_decrease_chance"),
+                "company_security_guard_first_decrease_robed_quantity" => config("security.securityguard.company.first_decrease_robed_quantity"),
+                "company_security_guard_second_decrease_robed_quantity" => config("security.securityguard.company.second_decrease_robed_quantity"),
+
+                "cyberdefense_cyberattack_chance" => config("security.cyberdefense.company.cyberattack_chance"),
+                "company_cyberdefense_duration" => config("security.cyberdefense.company.duration"),
+                "cyberdefense_phishing_chance" => config("security.cyberdefense.bank.phishing_chance"),
+                "bank_cyberdefense_duration" => config("security.cyberdefense.bank.duration"),
+
+                "house_anti_ai_ai_drone_rob_chance" => config("security.anti_ai.house.ai_drone_rob_chance"),
+                "player_anti_ai_ai_drone_rob_chance" => config("security.anti_ai.player.ai_drone_rob_chance"),
+
+                "bank_containment_rob_chance" => config("security.containment_system.bank.rob_chance"),
+                "bank_containment_compensation_cost" => config("security.containment_system.bank.compensation_cost"),
+                "company_containment_rob_chance" => config("security.containment_system.company.rob_chance"),
+                "company_containment_compensation_cost" => config("security.containment_system.company.compensation_cost"),
+            ]
         ];
 
         // company level
