@@ -42,7 +42,38 @@ class DataController extends Controller
             "change_city_cost" => config("city.change_cost"),
             "default_travel_time" => config("city.default_travel_time"),
             "travel_tier_multiplicator" => config("city.travel_tier_multiplicator"),
-            "companylevels" => CompanyLevel::all()
+            "companylevels" => CompanyLevel::all(),
+
+            "cyberattack_min_target_level" => config("rob.cyberattack.min_target_level"),
+            "cyberattack_cost" => config("rob.cyberattack.cost"),
+            "cyberattack_chance" => config("rob.cyberattack.chance"),
+            "cyberattack_money_robed" => config("rob.cyberattack.money_robed"),
+
+            "ai_drone_house_cost" => config("rob.ai_drone.house.cost"),
+            "ai_drone_house_chance" => config("rob.ai_drone.house.chance"),
+            "ai_drone_house_min_robed_quantity" => config("rob.ai_drone.house.min_robed_quantity"),
+            "ai_drone_house_max_robed_quantity" => config("rob.ai_drone.house.max_robed_quantity"),
+            "ai_drone_house_min_target_money" => config("rob.ai_drone.house.min_target_money"),
+            "ai_drone_player_cost" => config("rob.ai_drone.player.cost"),
+            "ai_drone_player_chance" => config("rob.ai_drone.player.chance"),
+            "ai_drone_player_min_robed_quantity" => config("rob.ai_drone.player.min_robed_quantity"),
+            "ai_drone_player_max_robed_quantity" => config("rob.ai_drone.player.max_robed_quantity"),
+            "ai_drone_player_min_target_money" => config("rob.ai_drone.player.min_target_money"),
+
+            "shoplifting_cost" => config("rob.shoplifting.cost"),
+            "shoplifting_chance" => config("rob.shoplifting.chance"),
+            "shoplifting_base_robed_money_min" => config("rob.shoplifting.base_robed_money_min"),
+            "shoplifting_base_robed_money_max" => config("rob.shoplifting.base_robed_money_max"),
+
+            "phishing_min_target_money" => config("rob.phishing.min_target_money"),
+            "phishing_cost" => config("rob.phishing.cost"),
+            "phishing_chance" => config("rob.phishing.chance"),
+            "phishing_robed_quantity" => config("rob.phishing.robed_quantity"),
+
+            "estate_robot_increase_price" => config("estate.robot_construction.increase_price"),
+            "estate_robot_decrease_duration" => config("estate.robot_construction.decrease_duration"),
+            "estate_robot_2_increase_price" => config("estate.robot_2_construction.increase_price"),
+            "estate_robot_2_decrease_duration" => config("estate.robot_2_construction.decrease_duration"),
         ];
 
         // company level
