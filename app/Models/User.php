@@ -74,4 +74,14 @@ class User extends Authenticatable
                 ->select(["id", "name", "quantity"])
                 ->get();
     }
+
+    public function homes(): HasMany {
+        return $this->hasMany(Home::class, "id_player", "id");
+    }
+
+    public function homesInCity() {
+        return $this->homes->filter(function(Home $home) {
+            return $home->house->city_id === $this->city->id;
+        });
+    }
 }
