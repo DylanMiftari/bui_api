@@ -81,6 +81,7 @@ class User extends Authenticatable
 
     public function homesInCity() {
         return $this->homes->filter(function(Home $home) {
+            $home->house->load("houseType");
             return $home->house->city_id === $this->city->id;
         });
     }
