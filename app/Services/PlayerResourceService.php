@@ -13,10 +13,12 @@ class PlayerResourceService {
     }
 
     public function checkCapacity(User $user, float $quantity): bool {
+        dd("à mettre à jour avec les banques");
         return $this->getTotalResourceQuantity($user) + $quantity <= (float)config("player.max_resource");
     }
 
     public function addResource(User $user, Resource $resource, float $quantity) {
+        dd("à mettre à jour avec les banques");
         $playerResource = PlayerResource::where("player_id", $user->id)->where("resource_id", $resource->id)->first();
         if($playerResource === null) {
             PlayerResource::create([

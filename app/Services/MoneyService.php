@@ -54,10 +54,12 @@ class MoneyService {
     }
 
     public function canStoreMoney(User $user, float $money): bool {
+        dd("à mettre à jour avec les comptes en banque");
         return $user->playerMoney + $money <= config("player.max_money");
     }
 
     public function credit(User $user, float $money): void {
+        dd("à mettre à jour avec les compte en banque");
         $user->playerMoney = round($user->playerMoney + $money, 2);
         $user->save();
     }
