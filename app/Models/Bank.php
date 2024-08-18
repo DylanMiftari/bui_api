@@ -35,4 +35,17 @@ class Bank extends Model
     public function bankAccounts(): HasMany {
         return $this->hasMany(BankAccount::class, "bankId", "id");
     }
+
+    public function getDataForClient(): array {
+        return [
+            "id" => $this->id,
+            "accountMaintenanceCost" => $this->accountMaintenanceCost,
+            "transferCost" => $this->transferCost,
+            "maxAccountMoney" => $this->maxAccountMoney,
+            "maxAccountResource" => $this->maxAccountResource,
+            "idCompany" => $this->idCompany,
+            "level" => $this->level,
+            "company" => $this->company->getDataForClient(),
+        ];
+    }
 }

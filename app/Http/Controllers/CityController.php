@@ -39,7 +39,7 @@ class CityController extends Controller
         $destCity = City::find($request->input("city_id"));
 
         if(!$moneyService->checkMoney($user, config("city.change_cost"))) {
-            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour voyager", 422);
+            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour voyager, si vous payer avec un compte bancaire, il faut prendre en comtpe les frais de transaction", 422);
         }
         if($destCity->id === $user->city_id) {
             return $this->errorService->errorResponse("Vous êtes déjà dans cette ville", 422);

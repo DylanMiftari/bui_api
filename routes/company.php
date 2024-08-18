@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CompanyController;
+use App\Http\Middleware\CheckCompanyClientMiddleware;
 use App\Http\Middleware\CheckCompanyMiddleware;
 use App\Http\Middleware\TravelMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -16,5 +17,9 @@ Route::middleware("auth:sanctum")->group(function() {
         Route::middleware(CheckCompanyMiddleware::class)->group(function() {
             Route::patch("/upgrade/{company}", [CompanyController::class, "upgrade"]);
         });
+    });
+
+    Route::prefix("/client")->middleware(CheckCompanyClientMiddleware::class)->group(function() {
+        Route::get("/{company}", [CompanyController::class, "showClient"]);
     });
 });

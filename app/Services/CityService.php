@@ -32,7 +32,7 @@ class CityService {
         $user->endTravel = Carbon::now()->addDays($addDays);
 
         $user->city_id = $destCity->id;
-        $this->moneyService->pay($user, config("city.change_cost"));
+        $this->moneyService->pay($user, config("city.change_cost"), "Voyage vers ".$destCity->name);
 
         $user->save();
     }

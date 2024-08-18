@@ -13,6 +13,15 @@ class BankAccount extends Model
 
     protected $table = "bankaccount";
 
+    protected $fillable = [
+        "accountMaintenanceCost",
+        "transferCost",
+        "maxMoney",
+        "maxResource",
+        "bankId",
+        "playerId"
+    ];
+
     public function player(): HasOne {
         return $this->hasOne(User::class, "id", "playerId");
     }

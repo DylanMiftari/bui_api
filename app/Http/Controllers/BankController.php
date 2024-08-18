@@ -2,24 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DebitOrCreditBankAccountRequest;
 use App\Http\Requests\EditBankRequest;
 use App\Models\Bank;
 use App\Models\BankAccount;
 use App\Models\BankLevel;
 use App\Models\Company;
+use App\Models\User;
+use App\Services\BankAccountService;
 use App\Services\BankService;
 use App\Services\ErrorService;
 use App\Services\WithService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BankController extends Controller
 {
     protected ErrorService $errorService;
     protected BankService $bankService;
+    protected BankAccountService $bankAccountService;
 
-    public function __construct(ErrorService $errorService, BankService $bankService) {
+    public function __construct(ErrorService $errorService, BankService $bankService, BankAccountService $bankAccountService) {
         $this->errorService = $errorService;
         $this->bankService = $bankService;
+        $this->bankAccountService = $bankAccountService;
     }
 
     public function show(Company $company) {
@@ -28,6 +34,13 @@ class BankController extends Controller
         }
 
         return $company->bank()->with("banklevel")->first();
+    }
+
+    public function showClient(Company $company) {
+        return response()->json([
+            "bank" => $company->bank->getDataForClient(),
+            "account" => $company->bank->bankAccounts()->where("playerId", Auth::id())->first()->load("bankResourceAccount"),
+        ]);
     }
 
     public function getAccounts(Bank $bank) {
@@ -59,6 +72,40 @@ class BankController extends Controller
 
         $this->bankService->editBank($bank, $request->input("accountMaintenanceCost"), $request->input("transferCost"),
         $request->input("maxAccountMoney"), $request->input("maxAccountResource"));
+
+        return response()->json([
+            "status" => "success"
+        ]);
+    }
+
+    public function openAccount(Bank $bank) {
+        $bankAccountCount = $bank->bankAccounts()->count();
+        if($bankAccountCount+1 > $bank->banklevel->maxNbAccount) {
+            return $this->errorService->errorResponse("Cette banque n'a plus de place", 422);
+        }
+        $this->bankService->openAccount($bank, User::find(Auth::id()));
+
+        return response()->json([
+            "status" => "success"
+        ]);
+    }
+
+    public function debitAccount(DebitOrCreditBankAccountRequest $request, Bank $bank) {
+        $bankAccount = $bank->bankAccounts()->where("playerId", Auth::id())->first();
+        $player = User::find(Auth::id());
+        $money = $request->input("money");
+
+        if($bankAccount === null) {
+            return $this->errorService->errorResponse("Vous ne possédez pas de compte dans cette banque");
+        }
+        if($player->playerMoney+$money > config("player.max_money")) {
+            return $this->errorService->errorResponse("Vous ne pourrez pas stocker tout cette argent sur vous");
+        }
+        if($bankAccount->money < $money) {
+            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent sur le compte");
+        }
+
+        $this->bankAccountService->debitAccount($bankAccount, $player, $money);
 
         return response()->json([
             "status" => "success"

@@ -50,4 +50,16 @@ class Company extends Model
     public function security(): HasOne {
         return $this->hasOne(Security::class, "companyId", "id");
     }
+
+    public function getDataForClient(): array {
+        return [
+            "id" => $this->id,
+            "name" => $this->name,
+            "id_player" => $this->id_player,
+            "companylevel" => $this->companylevel,
+            "company_type" => $this->company_type,
+            "city_id" => $this->city_id,
+            "activated" => $this->activated,
+        ];
+    }
 }

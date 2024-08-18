@@ -20,7 +20,7 @@ class CompanyService {
             "company_type" => $type,
             "city_id" => $user->city_id
         ]);
-        $this->moneyService->pay($user, config("company.creationPrice"));
+        $this->moneyService->pay($user, config("company.creationPrice"), "Création de l'entreprise : ".$name);
         return $company;
     }
 

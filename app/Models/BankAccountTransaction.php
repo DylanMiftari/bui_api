@@ -9,4 +9,11 @@ class BankAccountTransaction extends Model
 {
     use HasFactory;
     protected $table = "bankaccounttransaction";
+
+    protected $fillable = [
+        "money",
+        "description",
+        "bankAccountId",
+        "transfert_cost"
+    ];
 }

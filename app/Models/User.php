@@ -85,4 +85,8 @@ class User extends Authenticatable
             return $home->house->city_id === $this->city->id;
         });
     }
+
+    public function bankAccounts(): HasMany {
+        return $this->hasMany(BankAccount::class, "playerId", "id");
+    }
 }

@@ -85,9 +85,9 @@ class MineController extends Controller
         }
 
         if(!$moneyService->checkMoney($user, $mineLevel->priceForNextLevel)) {
-            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour améliorer votre mine", 422);
+            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour améliorer votre mine, si vous payer avec un compte bancaire, il faut prendre en comtpe les frais de transaction", 422);
         }
-        $moneyService->pay($user, $mineLevel->priceForNextLevel);
+        $moneyService->pay($user, $mineLevel->priceForNextLevel, "Amélioration d'une mine au niveau : ".(($mine->level)+1));
         $this->mineService->upgradeMine($mine);
 
         return response()->json([
@@ -102,9 +102,9 @@ class MineController extends Controller
             return $this->errorService->errorResponse("Vous possédez déjà le nombre maximum de mines", 422);
         }
         if(!$moneyService->checkMoney($user, $this->mineService->getNewMinePrice($user))) {
-            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour acheter une nouvelle mine", 422);
+            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour acheter une nouvelle mine, si vous payer avec un compte bancaire, il faut prendre en comtpe les frais de transaction", 422);
         }
-        $moneyService->pay($user, $this->mineService->getNewMinePrice($user));
+        $moneyService->pay($user, $this->mineService->getNewMinePrice($user), "Achat d'une nouvelle mine");
         $mine = $this->mineService->createNewMine($user);
         return response()->json([
             "status" => "success",

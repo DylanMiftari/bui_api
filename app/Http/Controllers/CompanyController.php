@@ -42,6 +42,10 @@ class CompanyController extends Controller
         return $company;
     }
 
+    public function showClient(Company $company) {
+        return $company->getDataForClient();
+    }
+
     public function createCompany(CreateCompanyRequest $request, BankService $bankService, CasinoService $casinoService, 
     EstateService $estateService, FactoryService $factoryService, MafiaService $mafiaService, SecurityService $securityService,
     MoneyService $moneyService) {
@@ -52,7 +56,7 @@ class CompanyController extends Controller
             return $this->errorService->errorResponse("Vous avez déjà construit le nombre maximum d'entreprises : ".config("player.max_companies"));
         }
         if(!$moneyService->checkMoney($user, config("company.creationPrice"))) {
-            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour créer une entreprise");
+            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour créer votre entreprises, si vous payer avec un compte bancaire, il faut prendre en comtpe les frais de transaction");
         }
 
         switch($request->get("company_type")) {
@@ -92,11 +96,11 @@ class CompanyController extends Controller
             return $this->errorService->errorResponse("Votre entreprise est déjà au niveau maximum", 422);
         }
         if(!$moneyService->checkMoney($user, $companyLevel->priceForNextLevel)) {
-            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour améliorer votre entreprises", 422);
+            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour améliorer votre entreprises, si vous payer avec un compte bancaire, il faut prendre en comtpe les frais de transaction", 422);
         }
 
         $this->companyService->upgradeCompany($company);
-        $moneyService->pay($user, $companyLevel->priceForNextLevel);
+        $moneyService->pay($user, $companyLevel->priceForNextLevel, "Améliorer l'entreprise ".$company->name." au niveau ".(($company->level)+1));
 
         return response()->json([
             "status" => "success"
