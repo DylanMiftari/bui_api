@@ -8,6 +8,7 @@ use App\Models\Resource;
 use App\Models\User;
 use App\Services\ErrorService;
 use App\Services\MoneyService;
+use App\Services\PlayerResourceService;
 use App\Services\ResourceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,13 +26,14 @@ class ResourceController extends Controller
     public function index() {
         return Resource::all();
     }
-    public function playerResources() {
+    public function playerResources(PlayerResourceService $playerResourceService) {
         $user = User::find(Auth::id());
-
-        return $user->resourceWithQuantity();
+        
+        return $playerResourceService->getAllResources($user);
     }
 
     public function sell(sellResourceRequest $request, MoneyService $moneyService) {
+        dd("a refaire avec les banques");
         $user = User::find(Auth::id());
         $sellResources = $request->input("sell_resources");
         $totalSell = $this->resourceService->getTotalSell($sellResources);

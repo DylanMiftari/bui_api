@@ -14,6 +14,12 @@ class BankResourceAccount extends Model
     protected $table = "bankresourceaccount";
     protected $primaryKey = ["bankAccountId", "resourceId"];
 
+    protected $fillable = [
+        "bankAccountId",
+        "resourceId",
+        "quantity",
+    ];
+
     public $timestamps = false;
 
 }

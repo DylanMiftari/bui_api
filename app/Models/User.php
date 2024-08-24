@@ -89,4 +89,26 @@ class User extends Authenticatable
     public function bankAccounts(): HasMany {
         return $this->hasMany(BankAccount::class, "playerId", "id");
     }
+
+    public function storableMoney(): float {
+        return round(config("player.max_money") - $this->playerMoney, 2);
+    }
+
+    public function storableResources(): float {
+        return round(config("player.max_resource") - $this->resourceWithQuantity()->sum("quantity"), 2);
+    }
+
+    public function addResource(int $resourceId, float $quantity): void {
+        $playerResource = PlayerResource::where("player_id", $this->id)->where("resource_id", $resourceId)->first();
+        if($playerResource === null) {
+            PlayerResource::create([
+                "player_id" => $this->id,
+                "resource_id" => $resourceId,
+                "quantity" => $quantity
+            ]);
+        } else {
+            $playerResource->quantity += $quantity;
+            $playerResource->save();
+        }
+    }
 }

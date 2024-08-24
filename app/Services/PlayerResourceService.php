@@ -8,28 +8,59 @@ use App\Models\User;
 
 class PlayerResourceService {
 
+    public function getAllResources(User $user) {
+        $resources = $user->resourceWithQuantity();
+        $resources = $resources->keyBy("name");
+
+        foreach($user->bankAccounts as $bankAccount) {
+            foreach($bankAccount->resourcesWithQuantity() as $resource) {
+                if($resources->has($resource->name)) {
+                    $resources[$resource->name]->quantity = round($resources[$resource->name]->quantity + $resource->quantity, 2);
+                } else {
+                    $resources->put($resource->name, $resource);
+                }
+            }
+        }
+
+        return $resources;
+    }
+
     public function getTotalResourceQuantity(User $user): float {
         return PlayerResource::where("player_id", $user->id)->sum("quantity");
     }
 
     public function checkCapacity(User $user, float $quantity): bool {
-        dd("à mettre à jour avec les banques");
-        return $this->getTotalResourceQuantity($user) + $quantity <= (float)config("player.max_resource");
+        $totalStorable = 0;
+        // Player
+        $totalStorable = round($totalStorable + $user->storableResources(), 2);
+        // BankAccount
+        foreach($user->bankAccounts as $bankAccount) {
+            $totalStorable = round($totalStorable + $bankAccount->storableResources(), 2);
+        }
+        return $totalStorable >= $quantity;
     }
 
     public function addResource(User $user, Resource $resource, float $quantity) {
-        dd("à mettre à jour avec les banques");
-        $playerResource = PlayerResource::where("player_id", $user->id)->where("resource_id", $resource->id)->first();
-        if($playerResource === null) {
-            PlayerResource::create([
-                "player_id" => $user->id,
-                "resource_id" => $resource->id,
-                "quantity" => $quantity
-            ]);
-        } else {
-            $playerResource->quantity += $quantity;
-            $playerResource->save();
+        $totalAdded = 0;
+        // Player
+        if($user->storableResources() >= $quantity) {
+            $user->addResource($resource->id, $quantity);
+            return;
         }
+        $totalAdded = $user->storableResources();
+        $user->addResource($resource->id, $totalAdded);
+        // BankAccounts
+        $bankAccounts = $user->bankAccounts->shuffle();
+        foreach($bankAccounts as $bankAccount) {
+            if($bankAccount->storableResources() >= round($quantity - $totalAdded, 2)) {
+                $bankAccount->addResource($resource->id, round($quantity - $totalAdded, 2));
+                return;
+            }
+            $canStore = $bankAccount->storableResources();
+            $bankAccount->addResource($resource->id, $canStore);
+            $totalAdded = round($totalAdded + $canStore, 2);
+        }
+        return;
     }
 
 }
