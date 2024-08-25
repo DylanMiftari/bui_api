@@ -26,17 +26,6 @@ class MoneyService {
         $totalPayed = 0;
         $actualPayed = 0;
 
-        // Player Money
-        if($user->playerMoney >= $price) {
-            $user->playerMoney = round($user->playerMoney - $price, 2);
-            $user->save();
-            return $price;
-        }
-        $totalPayed = $user->playerMoney;
-        $actualPayed = $user->playerMoney;
-        $user->playerMoney = 0;
-        $user->save();
-
         // BankAccounts
         $bankAccounts = $user->bankAccounts->shuffle();
         foreach($bankAccounts as $bankAccount) {
@@ -49,6 +38,10 @@ class MoneyService {
             $totalPayed += $canPay;
             $actualPayed += $this->bankAccountService->makeTransaction($bankAccount, $canPay, $description);
         }
+        // Player Money
+        $actualPayed = round($actualPayed + round($price-$totalPayed, 2));
+        $user->playerMoney = round($user->playerMoney - round($price-$totalPayed, 2), 2);
+        $user->save();
 
         return $actualPayed;
     }
@@ -67,16 +60,6 @@ class MoneyService {
 
     public function credit(User $user, float $money, string $description = ""): void {
         $totalCredit = 0;
-        // User
-        if($user->storableMoney() >= $money) {
-            $user->playerMoney = round($user->playerMoney + $money, 2);
-            $user->save();
-            return;
-        }
-        $totalCredit += $user->storableMoney();
-        $user->playerMoney = config("player.max_money");
-        $user->save();
-
         // Bankaccounts
         $bankAccounts = $user->bankAccounts->shuffle();
         foreach($bankAccounts as $bankAccount) {
@@ -88,6 +71,9 @@ class MoneyService {
             $totalCredit = round($canStore + $totalCredit, 2);
             $this->bankAccountService->makeCreditTransaction($bankAccount, $canStore, $description);
         }
+         // User
+        $user->playerMoney = round($user->playerMoney + round($money - $totalCredit, 2));
+        $user->save();
         return;
     }
 
