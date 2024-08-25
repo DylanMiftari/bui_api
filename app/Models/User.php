@@ -111,4 +111,19 @@ class User extends Authenticatable
             $playerResource->save();
         }
     }
+
+    public function resourceQuantity(Resource $resource): float {
+        $resources = $this->resourceWithQuantity()->keyBy("name");
+        return $resources->has($resource->name) ? $resources[$resource->name]->quantity : 0;
+    }
+
+    public function removeResource(Resource $resource, float $quantity) {
+        $playerResource = PlayerResource::where("player_id", $this->id)->where("resource_id", $resource->id)->first();
+        $playerResource->quantity = round($playerResource->quantity - $quantity, 2);
+        if($playerResource->quantity == 0) {
+            $playerResource->delete();
+        } else {
+            $playerResource->save();
+        }
+    }
 }

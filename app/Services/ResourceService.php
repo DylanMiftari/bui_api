@@ -18,4 +18,8 @@ class ResourceService {
         });
     }
 
+    public function getResourcePrice(Resource $resource, float $quantity) {
+        return round($quantity * $resource->marketPrice / 0.1, 2);
+    }
+
 }

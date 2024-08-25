@@ -14,6 +14,7 @@ class BankAccountTransaction extends Model
         "money",
         "description",
         "bankAccountId",
-        "transfert_cost"
+        "transfert_cost",
+        "isCredit"
     ];
 }

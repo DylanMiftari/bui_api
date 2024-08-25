@@ -65,7 +65,7 @@ class MoneyService {
         return $canStore >= $money;
     }
 
-    public function credit(User $user, float $money): void {
+    public function credit(User $user, float $money, string $description = ""): void {
         $totalCredit = 0;
         // User
         if($user->storableMoney() >= $money) {
@@ -80,15 +80,13 @@ class MoneyService {
         // Bankaccounts
         $bankAccounts = $user->bankAccounts->shuffle();
         foreach($bankAccounts as $bankAccount) {
-            if($bankAccount->storableMoney() >= round($money - $totalCredit)) {
-                $bankAccount->money = round($bankAccount->money + ($money - $totalCredit), 2);
-                $bankAccount->save();
+            if($bankAccount->storableMoney() >= round($money - $totalCredit, 2)) {
+                $this->bankAccountService->makeCreditTransaction($bankAccount, round($money - $totalCredit, 2), $description);
                 return;
             }
             $canStore = $bankAccount->storableMoney();
-            $totalCredit = round($canStore + $totalCredit);
-            $bankAccount->money = $bankAccount->maxMoney;
-            $bankAccount->save();
+            $totalCredit = round($canStore + $totalCredit, 2);
+            $this->bankAccountService->makeCreditTransaction($bankAccount, $canStore, $description);
         }
         return;
     }

@@ -32,8 +32,7 @@ class ResourceController extends Controller
         return $playerResourceService->getAllResources($user);
     }
 
-    public function sell(sellResourceRequest $request, MoneyService $moneyService) {
-        dd("a refaire avec les banques");
+    public function sell(sellResourceRequest $request, MoneyService $moneyService, PlayerResourceService $playerResourceService) {
         $user = User::find(Auth::id());
         $sellResources = $request->input("sell_resources");
         $totalSell = $this->resourceService->getTotalSell($sellResources);
@@ -47,22 +46,15 @@ class ResourceController extends Controller
         */
         $realTotalSell = 0;
         foreach($sellResources as $sellRes) {
-            $playerResource = PlayerResource::where("player_id", $user->id)->where("resource_id", $sellRes["resource_id"])->first();
-
-            if($playerResource !== null && $playerResource->quantity >= $sellRes["quantity"]) {
-                // Edit DB
-                $playerResource->quantity = round($playerResource->quantity - $sellRes["quantity"], 2);
-                if($playerResource->quantity == 0) {
-                    $playerResource->delete();
-                } else {
-                    $playerResource->save();
-                }
-                // Calcul money
-                $realTotalSell = round($realTotalSell + $sellRes["quantity"] * Resource::find($sellRes["resource_id"])->marketPrice / 0.1, 2);
+            $resource = Resource::find($sellRes["resource_id"]);
+            if($playerResourceService->playerHasResource($user, $resource, $sellRes["quantity"])) {
+                $price = $this->resourceService->getResourcePrice($resource, $sellRes["quantity"]);
+                $realTotalSell = round($realTotalSell + $price, 2);
+                $playerResourceService->removeResource($user, $resource, $sellRes["quantity"]);
             }
         }
 
-        $moneyService->credit($user, $realTotalSell);
+        $moneyService->credit($user, $realTotalSell, "Ventes de ressources");
 
         return response()->json([
             "status" => "success",

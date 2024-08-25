@@ -68,4 +68,19 @@ class BankAccount extends Model
             $bankResourceAccount->save();
         }
     }
+
+    public function resourceQuantity(Resource $resource): float {
+        $resources = $this->resourcesWithQuantity()->keyBy("name");
+        return $resources->has($resource->name) ? $resources[$resource->name]->quantity : 0;
+    }
+
+    public function removeResource(Resource $resource, float $quantity) {
+        $bankResourceAccount = BankResourceAccount::where("bankAccountId", $this->id)->where("resourceId", $resource->id)->first();
+        $bankResourceAccount->quantity = round($bankResourceAccount->quantity - $quantity, 2);
+        if($bankResourceAccount->quantity == 0) {
+            $bankResourceAccount->delete();
+        } else {
+            $bankResourceAccount->save();
+        }
+    }
 }

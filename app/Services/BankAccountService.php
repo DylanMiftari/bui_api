@@ -38,9 +38,26 @@ class BankAccountService {
             "description" => $description,
             "bankAccountId" => $bankAccount->id,
             "transfert_cost" => $transactionPrice,
+            "isCredit" => false,
         ]);
 
         return round($transactionPrice + $price, 2);
+    }
+
+    /**
+     * Add money on Account
+     */
+    public function makeCreditTransaction(BankAccount $bankAccount, float $money, string $description = "") {
+        $bankAccount->money = round($bankAccount->money + $money, 2);
+        $bankAccount->save();
+
+        BankAccountTransaction::create([
+            "money" => $money,
+            "description" => $description,
+            "bankAccountId" => $bankAccount->id,
+            "transfert_cost" => 0,
+            "isCredit" => 1,
+        ]);
     }
 
     public function maxCanPay(BankAccount $bankAccount): float {
