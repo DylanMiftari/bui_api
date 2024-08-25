@@ -72,7 +72,7 @@ class MoneyService {
             $this->bankAccountService->makeCreditTransaction($bankAccount, $canStore, $description);
         }
          // User
-        $user->playerMoney = round($user->playerMoney + round($money - $totalCredit, 2));
+        $user->playerMoney = round($user->playerMoney + round($money - $totalCredit, 2), 2);
         $user->save();
         return;
     }

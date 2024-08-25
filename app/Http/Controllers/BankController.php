@@ -37,9 +37,10 @@ class BankController extends Controller
     }
 
     public function showClient(Company $company) {
+        $bankAccount = $company->bank->bankAccounts()->where("playerId", Auth::id())->first();
         return response()->json([
             "bank" => $company->bank->getDataForClient(),
-            "account" => $company->bank->bankAccounts()->where("playerId", Auth::id())->first()->load("bankResourceAccount"),
+            "account" => $bankAccount === null ? null : $bankAccount->load("bankResourceAccount"),
         ]);
     }
 
@@ -82,6 +83,9 @@ class BankController extends Controller
         $bankAccountCount = $bank->bankAccounts()->count();
         if($bankAccountCount+1 > $bank->banklevel->maxNbAccount) {
             return $this->errorService->errorResponse("Cette banque n'a plus de place", 422);
+        }
+        if($bank->bankAccounts()->where("playerId", Auth::id())->exists()) {
+            return $this->errorService->errorResponse("Vous possédez déjà un compte dans cette banque", 422);
         }
         $this->bankService->openAccount($bank, User::find(Auth::id()));
 
