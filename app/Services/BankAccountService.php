@@ -11,12 +11,23 @@ class BankAccountService {
     /**
      * Remove money from account
      */
-    public function debitAccount(BankAccount $bankAccount, User $player, int $money) {
+    public function debitAccount(BankAccount $bankAccount, User $player, float $money) {
         dd("faire en sorte de prendre en compte les frais de transactions");
         $bankAccount->money -= $money;
         $bankAccount->save();
 
         $player->playerMoney += $money;
+        $player->save();
+    }
+
+    /**
+     * Add money from account
+     */
+    public function creditAccount(BankAccount $bankAccount, User $player, float $money) {
+        $bankAccount->money = round($bankAccount->money + $money, 2);
+        $bankAccount->save();
+
+        $player->playerMoney = round($player->playerMoney - $money, 2);
         $player->save();
     }
 

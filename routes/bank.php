@@ -6,6 +6,8 @@ use App\Http\Middleware\CheckBankClientMiddleware;
 use App\Http\Middleware\CheckBankMiddleware;
 use App\Http\Middleware\CheckCompanyClientMiddleware;
 use App\Http\Middleware\CheckCompanyMiddleware;
+use App\Http\Middleware\CheckHaveBankAccountMiddleware;
+use App\Models\Bank;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware("auth:sanctum")->group(function() {
@@ -19,7 +21,11 @@ Route::middleware("auth:sanctum")->group(function() {
     Route::get("/client/{company}", [BankController::class, "showClient"])->middleware(CheckCompanyClientMiddleware::class);
 
     Route::prefix("/client/{bank}")->middleware(CheckBankClientMiddleware::class)->group(function() {
+        Route::model('bank', Bank::class);
         Route::post("/open-account", [BankController::class, "openAccount"]);
-        Route::patch("/debit", [BankController::class, "debitAccount"]);
+        Route::middleware(CheckHaveBankAccountMiddleware::class)->group(function() {
+            Route::patch("/debit", [BankController::class, "debitAccount"]);
+            Route::patch("/credit", [BankController::class, "creditAccount"]);
+        });
     });
 });

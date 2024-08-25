@@ -99,9 +99,6 @@ class BankController extends Controller
         $player = User::find(Auth::id());
         $money = $request->input("money");
 
-        if($bankAccount === null) {
-            return $this->errorService->errorResponse("Vous ne possédez pas de compte dans cette banque");
-        }
         if($player->playerMoney+$money > config("player.max_money")) {
             return $this->errorService->errorResponse("Vous ne pourrez pas stocker tout cette argent sur vous");
         }
@@ -110,6 +107,25 @@ class BankController extends Controller
         }
 
         $this->bankAccountService->debitAccount($bankAccount, $player, $money);
+
+        return response()->json([
+            "status" => "success"
+        ]);
+    }
+
+    public function creditAccount(DebitOrCreditBankAccountRequest $request, Bank $bank) {
+        $bankAccount = $bank->bankAccounts()->where("playerId", Auth::id())->first();
+        $player = User::find(Auth::id());
+        $money = $request->input("money");
+
+        if($bankAccount->storableMoney() < $money) {
+            return $this->errorService->errorResponse("Votre compte ne pourra pas stocker cet argent");
+        }
+        if($player->playerMoney < $money) {
+            return $this->errorService->errorResponse("Vous n'avez pas cet argent sur vous");
+        }
+
+        $this->bankAccountService->creditAccount($bankAccount, $player, $money);
 
         return response()->json([
             "status" => "success"
