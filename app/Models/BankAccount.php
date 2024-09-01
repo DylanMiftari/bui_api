@@ -39,6 +39,14 @@ class BankAccount extends Model
         return $this->hasOne(Bank::class, "id", "bankId");
     }
 
+    public function canPay(float $money): bool {
+        return $this->costWithTransfertCost($money)  >= $this->money;
+    }
+
+    public function costWithTransfertCost(float $money): float {
+        return round(($money * $this->transferCost / 100) + $money, 2);
+    }
+
     public function storableMoney(): float {
         return round($this->maxMoney - $this->money, 2);
     }

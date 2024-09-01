@@ -12,9 +12,16 @@ class BankAccountService {
      * Remove money from account
      */
     public function debitAccount(BankAccount $bankAccount, User $player, float $money) {
-        dd("faire en sorte de prendre en compte les frais de transactions");
-        $bankAccount->money -= $money;
+        $bankAccount->money -= $bankAccount->costWithTransfertCost($money);
         $bankAccount->save();
+
+        BankAccountTransaction::create([
+            "money" => $money,
+            "description" => "Retrait d'argent",
+            "bankAccountId" => $bankAccount->id,
+            "transfert_cost" => $bankAccount->costWithTransfertCost($money) - $money,
+            "isCredit" => false,
+        ]);
 
         $player->playerMoney += $money;
         $player->save();
@@ -26,6 +33,14 @@ class BankAccountService {
     public function creditAccount(BankAccount $bankAccount, User $player, float $money) {
         $bankAccount->money = round($bankAccount->money + $money, 2);
         $bankAccount->save();
+
+        BankAccountTransaction::create([
+            "money" => $money,
+            "description" => "Dépôt d'argent",
+            "bankAccountId" => $bankAccount->id,
+            "transfert_cost" => 0,
+            "isCredit" => true,
+        ]);
 
         $player->playerMoney = round($player->playerMoney - $money, 2);
         $player->save();

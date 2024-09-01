@@ -102,7 +102,7 @@ class BankController extends Controller
         if($player->playerMoney+$money > config("player.max_money")) {
             return $this->errorService->errorResponse("Vous ne pourrez pas stocker tout cette argent sur vous");
         }
-        if($bankAccount->money < $money) {
+        if($bankAccount->costWithTransfertCost($money) < $money) {
             return $this->errorService->errorResponse("Vous n'avez pas assez d'argent sur le compte");
         }
 
