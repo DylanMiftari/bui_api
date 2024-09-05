@@ -38,7 +38,7 @@ class CompanyTaxes extends Command
     public function handle()
     {
         foreach(City::all() as $city) {
-            foreach($city->companies as $company) {
+            foreach($city->companies()->lazy() as $company) {
                 if($this->moneyService->checkMoney($company->user, $city->weeklyCompanyTaxes)) {
                     $this->moneyService->pay($company->user, $city->weeklyCompanyTaxes);
                 } else {

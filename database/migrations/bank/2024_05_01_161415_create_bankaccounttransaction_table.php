@@ -19,6 +19,8 @@ return new class extends Migration
             $table->unsignedBigInteger("bankAccountId");
             $table->foreign("bankAccountId")->references("id")->on("bankaccount")->cascadeOnDelete()->cascadeOnUpdate();
 
+            $table->boolean("isCredit")->default(false);
+
             $table->timestamps();
         });
     }

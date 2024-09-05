@@ -47,7 +47,7 @@ class BankAccountService {
     }
 
     public function getTotalMoneyOfAccount(User $player): float {
-        return $player->bankAccounts()->sum("money");
+        return $player->bankAccounts()->where("isEnable", true)->sum("money");
     }
 
     public function makeTransaction(BankAccount $bankAccount, float $price, string $description = ""): float {

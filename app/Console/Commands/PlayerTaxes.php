@@ -39,7 +39,7 @@ class PlayerTaxes extends Command
     public function handle()
     {
         foreach(City::all() as $city) {
-            foreach($city->users as $user) {
+            foreach($city->users()->lazy() as $user) {
                 if($this->moneyService->checkMoney($user, $city->weeklyTaxes)) {
                     $this->moneyService->pay($user, $city->weeklyTaxes);
                 } else {

@@ -12,7 +12,7 @@ class PlayerResourceService {
         $resources = $user->resourceWithQuantity();
         $resources = $resources->keyBy("name");
 
-        foreach($user->bankAccounts as $bankAccount) {
+        foreach($user->bankAccounts()->where("isEnable", true)->get() as $bankAccount) {
             foreach($bankAccount->resourcesWithQuantity() as $resource) {
                 if($resources->has($resource->name)) {
                     $resources[$resource->name]->quantity = round($resources[$resource->name]->quantity + $resource->quantity, 2);
@@ -39,7 +39,7 @@ class PlayerResourceService {
         // Player
         $totalStorable = round($totalStorable + $user->storableResources(), 2);
         // BankAccount
-        foreach($user->bankAccounts as $bankAccount) {
+        foreach($user->bankAccounts()->where("isEnable", true)->get() as $bankAccount) {
             $totalStorable = round($totalStorable + $bankAccount->storableResources(), 2);
         }
         return $totalStorable >= $quantity;
@@ -55,7 +55,7 @@ class PlayerResourceService {
         $totalAdded = $user->storableResources();
         $user->addResource($resource->id, $totalAdded);
         // BankAccounts
-        $bankAccounts = $user->bankAccounts->shuffle();
+        $bankAccounts = $user->bankAccounts()->where("isEnable", true)->get()->shuffle();
         foreach($bankAccounts as $bankAccount) {
             if($bankAccount->storableResources() >= round($quantity - $totalAdded, 2)) {
                 $bankAccount->addResource($resource->id, round($quantity - $totalAdded, 2));
@@ -79,7 +79,7 @@ class PlayerResourceService {
             $user->removeResource($resource, $totalRemoved);
         }
         // Bank Accounts
-        $bankAccounts = $user->bankAccounts->shuffle();
+        $bankAccounts = $user->bankAccounts()->where("isEnable", true)->get()->shuffle();
         foreach($bankAccounts as $bankAccount) {
             if($bankAccount->resourceQuantity($resource) >= round($quantity - $totalRemoved, 2)) {
                 $bankAccount->removeResource($resource, round($quantity - $totalRemoved, 2));

@@ -99,6 +99,9 @@ class BankController extends Controller
         $player = User::find(Auth::id());
         $money = $request->input("money");
 
+        if(!$bankAccount->isEnable) {
+            return $this->errorService->errorResponse("Votre compte est désactiver vous ne pouvez pas faire de retrait");
+        }
         if($player->playerMoney+$money > config("player.max_money")) {
             return $this->errorService->errorResponse("Vous ne pourrez pas stocker tout cette argent sur vous");
         }
@@ -118,7 +121,7 @@ class BankController extends Controller
         $player = User::find(Auth::id());
         $money = $request->input("money");
 
-        if($bankAccount->storableMoney() < $money) {
+        if($bankAccount->storableMoney(true) < $money) {
             return $this->errorService->errorResponse("Votre compte ne pourra pas stocker cet argent");
         }
         if($player->playerMoney < $money) {

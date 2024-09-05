@@ -13,7 +13,7 @@ class MoneyService {
     }
 
     public function checkMoney(User $user, float $price): bool {
-        $total_money = $this->bankAccountService->getTotalMoneyOfAccount($user) + $user->playerMoney;
+        $total_money = $this->getTotalMoneyOfPlayer($user);
         $mostExpensiteTransfertCost = $user->bankAccounts()->orderByDesc("transferCost")->first();
         if($mostExpensiteTransfertCost === null) {
             return $total_money >= $price;
@@ -22,12 +22,16 @@ class MoneyService {
         return $total_money >= $price + round($price*$mostExpensiteTransfertCost->transferCost/100, 2);
     }
 
+    public function getTotalMoneyOfPlayer(User $player) {
+        return round($player->playerMoney + $this->bankAccountService->getTotalMoneyOfAccount($player), 2);
+    }
+
     public function pay(User $user, float $price, string $description = ""): float {
         $totalPayed = 0;
         $actualPayed = 0;
 
         // BankAccounts
-        $bankAccounts = $user->bankAccounts->shuffle();
+        $bankAccounts = $user->bankAccounts()->where("isEnable", true)->get()->shuffle();
         foreach($bankAccounts as $bankAccount) {
             if($bankAccount->money >= round($price-$totalPayed, 2)) {
                 $actualPayed += $this->bankAccountService->makeTransaction($bankAccount, round($price-$totalPayed, 2), $description);
@@ -49,7 +53,7 @@ class MoneyService {
     public function canStoreMoney(User $user, float $money): bool {
         $canStore = 0;
         // Bank Accounts
-        $bankAccounts = $user->bankAccounts;
+        $bankAccounts = $user->bankAccounts()->where("isEnable", true)->get();
         if(count($bankAccounts) > 0) {
             $canStore += round($bankAccounts->sum('maxMoney') - $bankAccounts->sum("money"), 2);
         }
@@ -61,7 +65,7 @@ class MoneyService {
     public function credit(User $user, float $money, string $description = ""): void {
         $totalCredit = 0;
         // Bankaccounts
-        $bankAccounts = $user->bankAccounts->shuffle();
+        $bankAccounts = $user->bankAccounts()->where("isEnable", true)->get()->shuffle();
         foreach($bankAccounts as $bankAccount) {
             if($bankAccount->storableMoney() >= round($money - $totalCredit, 2)) {
                 $this->bankAccountService->makeCreditTransaction($bankAccount, round($money - $totalCredit, 2), $description);

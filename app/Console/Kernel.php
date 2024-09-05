@@ -13,8 +13,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command("player-taxes")->weekly(); // Sunday at 00:00
-        $schedule->command("company-taxes")->weekly(); // Sunday at 00:00
+        $schedule->command("player-taxes")->weeklyOn(0, "0:0"); // Sunday at 00:00
+        $schedule->command("company-taxes")->weeklyOn(0, "0:30"); // Sunday at 00:30
+        $schedule->command("bank-account-maintenance")->weeklyOn(0, "1:0"); // Sunday at 01:00
     }
 
     /**

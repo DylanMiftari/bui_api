@@ -25,7 +25,7 @@ return new class extends Migration
             $table->unsignedBigInteger("playerId");
             $table->foreign("playerId")->references("id")->on("player")->restrictOnDelete()->restrictOnUpdate();
 
-            $table->boolean("isCredit")->default(false);
+            $table->boolean("isEnable")->default(true);
 
             $table->timestamps();
         });

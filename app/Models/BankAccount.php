@@ -20,7 +20,8 @@ class BankAccount extends Model
         "maxMoney",
         "maxResource",
         "bankId",
-        "playerId"
+        "playerId",
+        "isEnable"
     ];
 
     public function player(): HasOne {
@@ -39,7 +40,10 @@ class BankAccount extends Model
         return $this->hasOne(Bank::class, "id", "bankId");
     }
 
-    public function canPay(float $money): bool {
+    public function canPay(float $money, bool $bypass = false): bool {
+        if(!$this->isEnable && !$bypass) {
+            return 0;
+        }
         return $this->costWithTransfertCost($money)  >= $this->money;
     }
 
@@ -47,11 +51,17 @@ class BankAccount extends Model
         return round(($money * $this->transferCost / 100) + $money, 2);
     }
 
-    public function storableMoney(): float {
+    public function storableMoney(bool $bypass = false): float {
+        if(!$this->isEnable && !$bypass) {
+            return 0;
+        }
         return round($this->maxMoney - $this->money, 2);
     }
 
     public function resourcesWithQuantity() {
+        if(!$this->isEnable) {
+            return [];
+        }
         return DB::table("bankresourceaccount")
                 ->join("resource", "bankresourceaccount.resourceId", "=", "resource.id")
                 ->where("bankAccountId", $this->id)
@@ -60,6 +70,9 @@ class BankAccount extends Model
     }
 
     public function storableResources() {
+        if(!$this->isEnable) {
+            return 0;
+        }
         return round($this->maxResource - $this->resourcesWithQuantity()->sum("quantity"), 2);
     }
 
@@ -78,6 +91,9 @@ class BankAccount extends Model
     }
 
     public function resourceQuantity(Resource $resource): float {
+        if(!$this->isEnable) {
+            return 0;
+        }
         $resources = $this->resourcesWithQuantity()->keyBy("name");
         return $resources->has($resource->name) ? $resources[$resource->name]->quantity : 0;
     }
