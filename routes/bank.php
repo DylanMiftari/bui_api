@@ -5,6 +5,7 @@ use App\Http\Middleware\CheckBankAccountMiddleware;
 use App\Http\Middleware\CheckBankClientMiddleware;
 use App\Http\Middleware\CheckBankMiddleware;
 use App\Http\Middleware\CheckCompanyClientMiddleware;
+use App\Http\Middleware\CheckCompanyLevelMiddleware;
 use App\Http\Middleware\CheckCompanyMiddleware;
 use App\Http\Middleware\CheckHaveBankAccountMiddleware;
 use App\Models\Bank;
@@ -26,6 +27,9 @@ Route::middleware("auth:sanctum")->group(function() {
         Route::middleware(CheckHaveBankAccountMiddleware::class)->group(function() {
             Route::patch("/debit", [BankController::class, "debitAccount"]);
             Route::patch("/credit", [BankController::class, "creditAccount"]);
+            Route::prefix("/credit-request")->middleware("companyLevel:".config("bank.min_level_for_credit"))->group(function() {
+                Route::post("/", [BankController::class, "createCreditRequest"]);
+            });
         });
     });
 });

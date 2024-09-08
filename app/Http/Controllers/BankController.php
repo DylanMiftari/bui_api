@@ -4,28 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DebitOrCreditBankAccountRequest;
 use App\Http\Requests\EditBankRequest;
+use App\Http\Requests\MakeCreditRequestRequest;
 use App\Models\Bank;
 use App\Models\BankAccount;
 use App\Models\BankLevel;
 use App\Models\Company;
 use App\Models\User;
 use App\Services\BankAccountService;
+use App\Services\BankCreditService;
 use App\Services\BankService;
 use App\Services\ErrorService;
+use App\Services\MoneyService;
 use App\Services\WithService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class BankController extends Controller
 {
-    protected ErrorService $errorService;
-    protected BankService $bankService;
-    protected BankAccountService $bankAccountService;
 
-    public function __construct(ErrorService $errorService, BankService $bankService, BankAccountService $bankAccountService) {
-        $this->errorService = $errorService;
-        $this->bankService = $bankService;
-        $this->bankAccountService = $bankAccountService;
+    public function __construct(protected ErrorService $errorService, protected BankService $bankService, 
+    protected BankAccountService $bankAccountService, protected MoneyService $moneyService) {
     }
 
     public function show(Company $company) {
@@ -132,6 +130,18 @@ class BankController extends Controller
 
         return response()->json([
             "status" => "success"
+        ]);
+    }
+
+    public function createCreditRequest(MakeCreditRequestRequest $request, Bank $bank, BankCreditService $bankCreditService) {
+        $player = User::find(Auth::id());
+        $money = $request->input("money");
+
+        $creditRequest = $bankCreditService->createCreditRequest($money, $player, $bank, $request->input("description"), $request->input("weeklypayment"));
+
+        return response()->json([
+            "status" => "success",
+            "data" => $creditRequest
         ]);
     }
 }

@@ -14,14 +14,16 @@ return new class extends Migration
         Schema::create('creditrequest', function (Blueprint $table) {
             $table->id();
             $table->string("status", 25);
-            $table->unsignedBigInteger("money");
-            $table->float("rate", total: 5);
+            $table->float("money", total: 20);
+            $table->float("weeklypayment", total: 20);
+            $table->float("rate", total: 5)->nullable();
+            $table->text("description");
 
             $table->unsignedBigInteger("playerId");
             $table->foreign("playerId")->references('id')->on("player")->restrictOnDelete()->restrictOnUpdate();
             
-            $table->unsignedBigInteger("companyId");
-            $table->foreign("companyId")->references("id")->on("company")->restrictOnDelete()->restrictOnUpdate();
+            $table->unsignedBigInteger("bankId");
+            $table->foreign("bankId")->references("id")->on("bank")->restrictOnDelete()->restrictOnUpdate();
 
             $table->timestamps();
         });
