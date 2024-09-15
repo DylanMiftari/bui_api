@@ -36,6 +36,10 @@ class Bank extends Model
         return $this->hasMany(BankAccount::class, "bankId", "id");
     }
 
+    public function creditRequests(): HasMany {
+        return $this->hasMany(CreditRequest::class, "bankId", "id");
+    }
+
     public function getDataForClient(): array {
         return [
             "id" => $this->id,

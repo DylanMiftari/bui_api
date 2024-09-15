@@ -133,6 +133,10 @@ class BankController extends Controller
         ]);
     }
 
+    public function getCreditRequest(Bank $bank) {
+        return $bank->creditRequests()->where("playerId", Auth::id())->get();
+    }
+
     public function createCreditRequest(MakeCreditRequestRequest $request, Bank $bank, BankCreditService $bankCreditService) {
         $player = User::find(Auth::id());
         $money = $request->input("money");

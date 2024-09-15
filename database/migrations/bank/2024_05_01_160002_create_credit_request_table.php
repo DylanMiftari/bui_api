@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string("status", 25);
             $table->float("money", total: 20);
             $table->float("weeklypayment", total: 20);
+            $table->float("alreadyPayed", total:20)->default(0);
             $table->float("rate", total: 5)->nullable();
             $table->text("description");
 

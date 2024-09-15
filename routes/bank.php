@@ -28,6 +28,7 @@ Route::middleware("auth:sanctum")->group(function() {
             Route::patch("/debit", [BankController::class, "debitAccount"]);
             Route::patch("/credit", [BankController::class, "creditAccount"]);
             Route::prefix("/credit-request")->middleware("companyLevel:".config("bank.min_level_for_credit"))->group(function() {
+                Route::get("/", [BankController::class, "getCreditRequest"]);
                 Route::post("/", [BankController::class, "createCreditRequest"]);
             });
         });
