@@ -31,7 +31,7 @@ class BankController extends Controller
             return $this->errorService->errorResponse("Cette entreprise n'est pas une banque", 422);
         }
 
-        return $company->bank()->with("banklevel")->first();
+        return $company->bank()->with(["banklevel"])->first();
     }
 
     public function showClient(Company $company) {
@@ -135,6 +135,15 @@ class BankController extends Controller
 
     public function getCreditRequest(Bank $bank) {
         return $bank->creditRequests()->where("playerId", Auth::id())->get();
+    }
+
+    public function getAllCreditRequests(Bank $bank) {
+        $creditRequests = $bank->creditRequests()->with('player')->get();
+        $creditRequests->each(function($creditRequest) {
+            $creditRequest->player->makeHidden('playerMoney');
+        });
+
+        return $creditRequests->makeHidden(['player.id']);
     }
 
     public function createCreditRequest(MakeCreditRequestRequest $request, Bank $bank, BankCreditService $bankCreditService) {

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CreditRequest extends Model
 {
@@ -19,4 +20,8 @@ class CreditRequest extends Model
         "description",
         "weeklypayment"
     ];
+
+    public function player(): HasOne {
+        return $this->hasOne(User::class, "id", "playerId");
+    }
 }

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware("auth:sanctum")->group(function() {
     Route::get("/{company}", [BankController::class, "show"])->middleware(CheckCompanyMiddleware::class);
     Route::get("/{bank}/accounts", [BankController::class, "getAccounts"])->middleware(CheckBankMiddleware::class);
+    Route::get("/{bank}/credit-request", [BankController::class, "getAllCreditRequests"])->middleware(CheckBankMiddleware::class);
 
     Route::put("/edit/{bank}", [BankController::class, "edit"])->middleware(CheckBankMiddleware::class);
 

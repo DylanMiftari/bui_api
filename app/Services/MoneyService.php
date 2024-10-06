@@ -33,7 +33,7 @@ class MoneyService {
         // BankAccounts
         $bankAccounts = $user->bankAccounts()->where("isEnable", true)->get()->shuffle();
         foreach($bankAccounts as $bankAccount) {
-            if($bankAccount->money >= round($price-$totalPayed, 2)) {
+            if($bankAccount->money >= round($price-$totalPayed, 2) && $bankAccount->money != 0) {
                 $actualPayed += $this->bankAccountService->makeTransaction($bankAccount, round($price-$totalPayed, 2), $description);
                 return $actualPayed;
             }
