@@ -19,4 +19,21 @@ class BankCreditService {
         ]);
     }
 
+    public function updateCreditRequest(CreditRequest $creditRequest, float|null $rate, float|null $money, float|null $weeklyPayments, 
+    string|null $description) {
+        if($rate !== null) {
+            $creditRequest->rate = $rate;
+        }
+        if($money !== null) {
+            $creditRequest->money = $money;
+        }
+        if($weeklyPayments !== null) {
+            $creditRequest->weeklypayment = $weeklyPayments;
+        }
+        if($description !== null && $description !== "") {
+            $creditRequest->description = $creditRequest->description."\n-------------\n".$description;
+        }
+        $creditRequest->save();
+    }
+
 }

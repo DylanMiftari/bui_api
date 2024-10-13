@@ -9,6 +9,7 @@ use App\Http\Middleware\CheckCompanyLevelMiddleware;
 use App\Http\Middleware\CheckCompanyMiddleware;
 use App\Http\Middleware\CheckHaveBankAccountMiddleware;
 use App\Models\Bank;
+use App\Models\CreditRequest;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware("auth:sanctum")->group(function() {
@@ -22,12 +23,18 @@ Route::middleware("auth:sanctum")->group(function() {
 
     Route::get("/client/{company}", [BankController::class, "showClient"])->middleware(CheckCompanyClientMiddleware::class);
 
+    Route::patch("/{bank}/credit-request/{creditRequest}", [BankController::class, "updateCreditRequest"])->middleware(CheckBankMiddleware::class);;
+
     Route::prefix("/client/{bank}")->middleware(CheckBankClientMiddleware::class)->group(function() {
         Route::model('bank', Bank::class);
+        Route::model("creditRequest", CreditRequest::class);
+
         Route::post("/open-account", [BankController::class, "openAccount"]);
+
         Route::middleware(CheckHaveBankAccountMiddleware::class)->group(function() {
             Route::patch("/debit", [BankController::class, "debitAccount"]);
             Route::patch("/credit", [BankController::class, "creditAccount"]);
+
             Route::prefix("/credit-request")->middleware("companyLevel:".config("bank.min_level_for_credit"))->group(function() {
                 Route::get("/", [BankController::class, "getCreditRequest"]);
                 Route::post("/", [BankController::class, "createCreditRequest"]);

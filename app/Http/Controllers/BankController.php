@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\bank\EditCreditRequestRequest;
 use App\Http\Requests\DebitOrCreditBankAccountRequest;
 use App\Http\Requests\EditBankRequest;
 use App\Http\Requests\MakeCreditRequestRequest;
@@ -9,6 +10,7 @@ use App\Models\Bank;
 use App\Models\BankAccount;
 use App\Models\BankLevel;
 use App\Models\Company;
+use App\Models\CreditRequest;
 use App\Models\User;
 use App\Services\BankAccountService;
 use App\Services\BankCreditService;
@@ -16,6 +18,7 @@ use App\Services\BankService;
 use App\Services\ErrorService;
 use App\Services\MoneyService;
 use App\Services\WithService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,7 +26,7 @@ class BankController extends Controller
 {
 
     public function __construct(protected ErrorService $errorService, protected BankService $bankService, 
-    protected BankAccountService $bankAccountService, protected MoneyService $moneyService) {
+    protected BankAccountService $bankAccountService, protected MoneyService $moneyService, protected BankCreditService $bankCreditService) {
     }
 
     public function show(Company $company) {
@@ -156,5 +159,22 @@ class BankController extends Controller
             "status" => "success",
             "data" => $creditRequest
         ]);
+    }
+
+    public function updateCreditRequest(EditCreditRequestRequest $request, Bank $bank, CreditRequest $creditRequest) {
+        if(!in_array($creditRequest->status, ["wait on bank"])) {
+            return $this->errorService->errorResponse("Vous ne pouvez pas modifier cette demande de prêt pour le moment", 403);
+        }
+        if($creditRequest->rate === null && $request->input("rate") === null) {
+            return $this->errorService->errorResponse("Vous devez définir un taux pour le prêt", 422);
+        }
+
+        try {
+            $this->bankCreditService->updateCreditRequest($creditRequest, $request->input("rate"), $request->input("money"), 
+            $request->input("weeklyPayments"), $request->input("description"));
+            return response()->json(["status" => "success"]);
+        } catch(Exception $e) {
+            return response()->json(["status" => "error"]);
+        }
     }
 }
