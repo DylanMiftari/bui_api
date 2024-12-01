@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -53,6 +54,17 @@ class User extends Authenticatable
 
     public function city(): HasOne {
         return $this->hasOne(City::class, "id", "city_id");
+    }
+
+    public function casinoTickets(): HasMany {
+        return $this->hasMany(CasinoTicket::class, "playerId", "id");
+    }
+
+    public function casinoTicket(Casino $casino): CasinoTicket|null {
+        $now = Carbon::now();
+        $expirationLimit = $now->subDays(config("casino.casino_ticket_expired_after_days"));
+        return $this->casinoTickets()->where("casinoId", $casino->id)
+        ->where("created_at", ">=", $expirationLimit)->first();
     }
 
     public function resources(): HasManyThrough

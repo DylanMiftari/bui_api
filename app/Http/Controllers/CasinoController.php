@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UpdateCasinoRequest;
 use App\Models\Casino;
 use App\Models\Company;
+use App\Models\User;
 use App\Services\CasinoService;
 use App\Services\ErrorService;
 use App\Services\WithService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CasinoController extends Controller
 {
@@ -28,6 +30,20 @@ class CasinoController extends Controller
             return $this->errorService->errorResponse("L'entreprise n'est pas un casino", 422);
         }
         return $this->withService->with(Casino::where("companyId", $company->id), $request->input("with"))->first();
+    }
+
+    public function showClient(Request $request, Company $company) {
+        if($company->company_type !== "casino") {
+            return $this->errorService->errorResponse("L'entreprise n'est pas un casino", 422);
+        }
+        $user = User::find(Auth::id());
+        $res = [
+            "casino" => $company->casino->with("casinolevel")->first(),
+            "ticket" => $user->casinoTicket($company->casino)
+        ];
+        $res["casino"]["ticketCount"] = $company->casino->tickets()->where("isVIP", false)->count();
+        $res["casino"]["VIPTicketCount"] = $company->casino->tickets()->where("isVIP", true)->count();
+        return $res;
     }
 
     public function update(UpdateCasinoRequest $request, Casino $casino) {
