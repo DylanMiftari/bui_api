@@ -171,7 +171,7 @@ class BankController extends Controller
 
         try {
             $this->bankCreditService->updateCreditRequest($creditRequest, $request->input("rate"), $request->input("money"), 
-            $request->input("weeklyPayments"), $request->input("description"));
+            $request->input("weeklyPayments"), $request->input("description"), $request->input("status"));
             return response()->json(["status" => "success"]);
         } catch(Exception $e) {
             return response()->json(["status" => "error"]);

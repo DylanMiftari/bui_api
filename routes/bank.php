@@ -25,6 +25,7 @@ Route::middleware("auth:sanctum")->group(function() {
 
     Route::patch("/{bank}/credit-request/{creditRequest}", [BankController::class, "updateCreditRequest"])->middleware(CheckBankMiddleware::class);;
 
+    
     Route::prefix("/client/{bank}")->middleware(CheckBankClientMiddleware::class)->group(function() {
         Route::model('bank', Bank::class);
         Route::model("creditRequest", CreditRequest::class);

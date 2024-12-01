@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CreditRequest extends Model
 {
+
+    public const STATUS_LIST = ["wait on bank", "wait on client"];
+
     use HasFactory;
     protected $table = "creditrequest";
 

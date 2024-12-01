@@ -20,7 +20,7 @@ class BankCreditService {
     }
 
     public function updateCreditRequest(CreditRequest $creditRequest, float|null $rate, float|null $money, float|null $weeklyPayments, 
-    string|null $description) {
+    string|null $description, string|null $status=null) {
         if($rate !== null) {
             $creditRequest->rate = $rate;
         }
@@ -32,6 +32,9 @@ class BankCreditService {
         }
         if($description !== null && $description !== "") {
             $creditRequest->description = $creditRequest->description."\n-------------\n".$description;
+        }
+        if($status !== null && $description !== "") {
+            $creditRequest->status = $status;
         }
         $creditRequest->save();
     }

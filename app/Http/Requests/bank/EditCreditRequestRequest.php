@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\bank;
 
+use App\Models\CreditRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EditCreditRequestRequest extends FormRequest
@@ -25,7 +26,8 @@ class EditCreditRequestRequest extends FormRequest
             "rate" => ["decimal:0,10", "min:0"],
             "money" => ["decimal:0,10", "min:1"],
             "weeklyPayments" => ["decimal:0,10", "min:1"],
-            "description" => ["string"]
+            "description" => ["string", "nullable"],
+            "status" => ["string", "in:".implode(",", CreditRequest::STATUS_LIST)]
         ];
     }
 
@@ -40,7 +42,10 @@ class EditCreditRequestRequest extends FormRequest
             "weeklyPayments.decimal" => "La somme des paiements hebdomadaire doit être un nombre",
             "weeklyPayments.min" => "La somme des paiements hebdomadaire doit être supérieur à 1",
 
-            "description" => "La description doit être un texte"
+            "description.string" => "La description doit être un texte",
+
+            "status.string" => "Le status doit être un texte",
+            "status.in" => "Le status n'est pas valide"
         ];
     }
 }
