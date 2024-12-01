@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Casino;
+use App\Models\CasinoTicket;
 use App\Models\Company;
 use App\Models\User;
 
@@ -31,6 +32,16 @@ class CasinoService extends CompanyService {
             $casino->VIPTicketPrice = $VIPTicketPrice;
         }
         $casino->save();
+    }
+
+    public function buyTicket(Casino $caisno, User $player, bool $isVIP): CasinoTicket {
+        $ticket = new CasinoTicket();
+        $ticket->isVIP = $isVIP;
+        $ticket->casinoId = $caisno->id;
+        $ticket->playerId = $player->id;
+        $ticket->save();
+
+        return $ticket;
     }
 
 }
