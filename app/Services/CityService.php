@@ -18,7 +18,7 @@ class CityService {
         $res = [];
         foreach(City::all() as $city) {
             $cityArray = $city->toArray();
-            $cityArray["nbEntreprises"] = $city->companies()->count();
+            $cityArray["nbEntreprises"] = $city->companies()->where("activated", true)->count();
 
             array_push($res, $cityArray);
         }
