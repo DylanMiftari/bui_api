@@ -39,8 +39,10 @@ class MoneyService {
             }
 
             $canPay = $this->bankAccountService->maxCanPay($bankAccount);
-            $totalPayed += $canPay;
-            $actualPayed += $this->bankAccountService->makeTransaction($bankAccount, $canPay, $description);
+            if($canPay != 0) {
+                $totalPayed += $canPay;
+                $actualPayed += $this->bankAccountService->makeTransaction($bankAccount, $canPay, $description);
+            }
         }
         // Player Money
         $actualPayed = round($actualPayed + round($price-$totalPayed, 2));
