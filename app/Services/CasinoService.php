@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Casino;
+use App\Models\CasinoParty;
 use App\Models\CasinoTicket;
 use App\Models\Company;
 use App\Models\User;
@@ -42,6 +43,43 @@ class CasinoService extends CompanyService {
         $ticket->save();
 
         return $ticket;
+    }
+
+    public function playRoulette(): string {
+        $nb1 = (string)random_int("0", 9);
+        $nb2 = (string)random_int("0", 9);
+        $nb3 = (string)random_int("0", 9);
+        return $nb1.$nb2.$nb3;
+    }
+
+    public function roulette(Casino $casino, float $bet): array {
+        $res = $this->playRoulette();
+        $gain = 0;
+        if(in_array($res, [
+            "012", "123", "234", "345", "456", "567", "678", "789",
+            "210", "321", "432", "543", "654", "765", "876", "987"
+        ])) {
+            $gain = round($bet * $casino->rouletteSequenceMultiplicator, 2);
+        } else if(in_array($res, ["000", "111", "222", "333", "444", "555", "666", "888", "999"])) {
+            $gain = round($bet * $casino->rouletteTripletMultiplcator, 2);
+        } else if($res === "777") {
+            $gain = round($bet * $casino->rouletteTripleSeventMultiplicator, 2);
+        }
+
+        return [
+            "res" => $res,
+            "gain" => $gain
+        ];
+    }
+
+    public function saveParty(string $gameName, int $bet, int $winnings, Casino $casino, User $user) {
+        $casinoParty = new CasinoParty();
+        $casinoParty->gameName = $gameName;
+        $casinoParty->bet = $bet;
+        $casinoParty->winnings = $winnings;
+        $casinoParty->casinoId = $casino->id;
+        $casinoParty->playerId = $user->id;
+        $casinoParty->save();
     }
 
 }

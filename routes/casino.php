@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\CasinoController;
+use App\Http\Middleware\casino\CasinoClientMiddleware;
 use App\Http\Middleware\casino\HaveNoTicketMiddleware;
+use App\Http\Middleware\casino\HaveTicketMiddleware;
 use App\Http\Middleware\CheckCasinoMiddleware;
 use App\Http\Middleware\CheckCompanyClientMiddleware;
 use App\Http\Middleware\CheckCompanyMiddleware;
@@ -17,5 +19,11 @@ Route::middleware("auth:sanctum")->group(function() {
         Route::get("", [CasinoController::class, "showClient"]);
 
         Route::post("/{casino}/buy-ticket", [CasinoController::class, "buyTicket"])->middleware(HaveNoTicketMiddleware::class);
+    });
+
+    Route::get("/casino/{casino}", [CasinoController::class, "showClientCasino"]);
+
+    Route::prefix("{casino}/game")->middleware([CasinoClientMiddleware::class, HaveTicketMiddleware::class])->group(function () {
+        Route::post("/roulette", [CasinoController::class, "playRoulette"]);
     });
 });

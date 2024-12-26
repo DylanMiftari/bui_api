@@ -24,6 +24,16 @@ class CompanyService {
         return $company;
     }
 
+    public function storeInSafe(Company $company, float $money) {
+        $company->money_in_safe = round($company->money_in_safe + $money, 2);
+        $company->save();
+    }
+
+    public function removeFromSafe(Company $company, float $money) {
+        $company->money_in_safe = round($company->money_in_safe - $money, 2);
+        $company->save();
+    }
+
     public function desactivateCompany(Company $company) {
         $company->activated = false;
         $company->save();

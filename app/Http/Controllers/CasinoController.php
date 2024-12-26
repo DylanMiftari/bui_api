@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\casino\BuyTicketRequest;
+use App\Http\Requests\casino\RouletteRequest;
 use App\Http\Requests\UpdateCasinoRequest;
 use App\Models\Casino;
 use App\Models\Company;
 use App\Models\User;
 use App\Services\CasinoService;
+use App\Services\CompanyService;
 use App\Services\ErrorService;
 use App\Services\MoneyService;
 use App\Services\WithService;
@@ -21,7 +23,8 @@ class CasinoController extends Controller
 
     protected CasinoService $casinoService;
 
-    public function __construct(ErrorService $errorService, WithService $withService, CasinoService $casinoService) {
+    public function __construct(ErrorService $errorService, WithService $withService, CasinoService $casinoService, private MoneyService $moneyService, 
+    private CompanyService $companyService) {
         $this->errorService = $errorService;
         $this->withService = $withService;
         $this->casinoService = $casinoService;
@@ -34,7 +37,7 @@ class CasinoController extends Controller
         return $this->withService->with(Casino::where("companyId", $company->id), $request->input("with"))->first();
     }
 
-    public function showClient(Request $request, Company $company) {
+    public function showClient(Company $company) {
         if($company->company_type !== "casino") {
             return $this->errorService->errorResponse("L'entreprise n'est pas un casino", 422);
         }
@@ -47,6 +50,10 @@ class CasinoController extends Controller
         $res["casino"]["casinolevel"] = $company->casino->casinolevel;
         $res["casino"]["VIPTicketCount"] = $company->casino->VIPTicketsCount();
         return $res;
+    }
+
+    public function showClientCasino(Casino $casino) {
+        return $this->showClient($casino->company);
     }
 
     public function update(UpdateCasinoRequest $request, Casino $casino) {
@@ -99,5 +106,37 @@ class CasinoController extends Controller
             "status" => "success",
             "ticket" => $ticket
         ]);
+    }
+
+    public function playRoulette(RouletteRequest $request, Casino $casino) {
+        $bet = $request->input("bet");
+        $user = User::find(Auth::id());
+
+        if($bet > $casino->rouletteMaxBet) {
+            return $this->errorService->errorResponse("Votre mise doit être inférieur à ".$casino->rouletteMaxBet, 422);
+        }
+        if(!$this->moneyService->checkMoney($user, $bet)) {
+            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour jouer cette mise", 422);
+        }
+
+        $totalPay = $this->moneyService->pay($user, $bet, "Jeu de la roulette au casino ".$casino->company->name);
+        $this->companyService->storeInSafe($casino->company, $bet);
+
+        $res = $this->casinoService->roulette($casino, $bet);
+        $this->casinoService->saveParty("roulette", $bet, $res["gain"], $casino, $user);
+
+        if($res["gain"] !== 0 && $this->moneyService->canStoreMoney($user, $res["gain"])) {
+            if($casino->company->money_in_safe < $res["gain"]) {
+                return $this->errorService->errorResponse("Vous avez gagné ".$res["gain"]." mais le casino ne possède pas assez d'argent pour payer", 400);
+            }
+            $this->moneyService->credit($user, $res["gain"], "Victoire au jeu de la roulette au casino : ".$casino->company->name);
+            $this->companyService->removeFromSafe($casino->company, $res["gain"]);
+        } else if($res["gain"] !== 0) {
+            return $this->errorService->errorResponse("Vous avez gagné ".$res["gain"]." mais vous ne pouvez pas stocker cette somme d'argent", 400);
+        }
+
+        $res["pay"] = $totalPay;
+
+        return $res;
     }
 }
