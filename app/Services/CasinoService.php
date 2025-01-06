@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Class\Card;
+use App\Class\CardPack;
+use App\Helper\PokerHelper;
 use App\Models\Casino;
 use App\Models\CasinoParty;
 use App\Models\CasinoTicket;
@@ -60,6 +63,23 @@ class CasinoService extends CompanyService {
         $nb2 = random_int(1, 6);
 
         return $nb1 + $nb2;
+    }
+
+    public function playPoker(): array {
+        $cards = [];
+        $cardPack = new CardPack();
+
+        for($i = 0; $i < 5; $i++) {
+            $cards[] = $cardPack->drawCard();
+        }
+
+        $cards[0] = new Card(1, 1);
+        $cards[1] = new Card(1, 1);
+        $cards[2] = new Card(1, 1);
+        $cards[3] = new Card(1, 4);
+        $cards[4] = new Card(1, 1);
+
+        return $cards;
     }
 
     
@@ -124,6 +144,14 @@ class CasinoService extends CompanyService {
             "res" => $res,
             "gain" => $gain
         ];
+    }
+
+    public function poker(Casino $casino, float $bet, bool $isVip): array {
+        $res = $this->playPoker();
+        dump($res);
+        dd(PokerHelper::checkFourOfKind($res));
+
+        return [];
     }
 
     public function saveParty(string $gameName, int $bet, int $winnings, Casino $casino, User $user) {

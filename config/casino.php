@@ -5,4 +5,5 @@ return [
     "min_level_to_sell_vip_tickets" => 3,
 
     "min_level_for_dice" => 2,
+    "min_level_for_poker" => 3,
 ];

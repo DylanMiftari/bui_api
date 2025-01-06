@@ -27,5 +27,7 @@ Route::middleware("auth:sanctum")->group(function() {
         Route::post("/roulette", [CasinoController::class, "playRoulette"]);
         Route::post("/dice", [CasinoController::class, "playDice"])
             ->middleware(["checkCasinoLevel:".config("casino.min_level_for_dice")]);
+        Route::post("/poker", [CasinoController::class, "playPoker"])
+            ->middleware(["checkCasinoLevel:".config("casino.min_level_for_poker")]);
     });
 });

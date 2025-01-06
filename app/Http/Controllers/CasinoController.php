@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\casino\BuyTicketRequest;
 use App\Http\Requests\casino\DiceRequest;
+use App\Http\Requests\casino\PokerRequest;
 use App\Http\Requests\casino\RouletteRequest;
 use App\Http\Requests\UpdateCasinoRequest;
 use App\Models\Casino;
@@ -181,5 +182,26 @@ class CasinoController extends Controller
         $res["pay"] = $totalPay;
 
         return $res;
+    }
+
+    public function playPoker(PokerRequest $request, Casino $casino) {
+        $bet = $request->input("bet");
+        $user = User::find(Auth::id());
+        $isVIP = $user->vipCasinoTicket($casino) !== null;
+        $maxBet = $casino->pokerMaxBet;
+        $maxVIPBet = $casino->pokerMaxVIPBet;
+
+        if(!$this->casinoService->checkBet($bet, $maxBet, $maxVIPBet, $isVIP)) {
+            return $this->errorService->errorResponse("Votre mise doit être inférieur à ".($isVIP ? $maxVIPBet : $maxBet), 422);
+        }
+        if(!$this->moneyService->checkMoney($user, $bet)) {
+            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour jouer cette mise", 422);
+        }
+
+        // Paiement
+        //$totalPay = $this->casinoService->playerPayGame($user, $bet, "solo poker", $casino);
+
+        // Partie
+        $res = $this->casinoService->poker($casino, $bet, $isVIP);
     }
 }
