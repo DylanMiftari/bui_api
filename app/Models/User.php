@@ -67,6 +67,13 @@ class User extends Authenticatable
         ->where("created_at", ">=", $expirationLimit)->first();
     }
 
+    public function vipCasinoTicket(Casino $casino): CasinoTicket|null {
+        $now = Carbon::now();
+        $expirationLimit = $now->subDays(config("casino.casino_ticket_expired_after_days"));
+        return $this->casinoTickets()->where("casinoId", $casino->id)
+        ->where("created_at", ">=", $expirationLimit)->where("isVIP", true)->first();
+    }
+
     public function resources(): HasManyThrough
     {
         return $this->hasManyThrough(

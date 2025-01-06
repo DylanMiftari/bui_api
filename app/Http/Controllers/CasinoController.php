@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\casino\BuyTicketRequest;
+use App\Http\Requests\casino\DiceRequest;
 use App\Http\Requests\casino\RouletteRequest;
 use App\Http\Requests\UpdateCasinoRequest;
 use App\Models\Casino;
@@ -111,28 +112,70 @@ class CasinoController extends Controller
     public function playRoulette(RouletteRequest $request, Casino $casino) {
         $bet = $request->input("bet");
         $user = User::find(Auth::id());
+        $isVIP = $user->vipCasinoTicket($casino) !== null;
+        $maxBet = $casino->rouletteMaxBet;
+        $maxVIPBet = $casino->rouletteMaxVIPBet;
 
-        if($bet > $casino->rouletteMaxBet) {
+        if(!$this->casinoService->checkBet($bet, $maxBet, $maxVIPBet, $isVIP)) {
             return $this->errorService->errorResponse("Votre mise doit être inférieur à ".$casino->rouletteMaxBet, 422);
         }
         if(!$this->moneyService->checkMoney($user, $bet)) {
             return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour jouer cette mise", 422);
         }
 
-        $totalPay = $this->moneyService->pay($user, $bet, "Jeu de la roulette au casino ".$casino->company->name);
-        $this->companyService->storeInSafe($casino->company, $bet);
+        // Paiement
+        $totalPay = $this->casinoService->playerPayGame($user, $bet, "roulette", $casino);
 
-        $res = $this->casinoService->roulette($casino, $bet);
+        // Partie
+        $res = $this->casinoService->roulette($casino, $bet, $isVIP);
         $this->casinoService->saveParty("roulette", $bet, $res["gain"], $casino, $user);
 
-        if($res["gain"] !== 0 && $this->moneyService->canStoreMoney($user, $res["gain"])) {
-            if($casino->company->money_in_safe < $res["gain"]) {
-                return $this->errorService->errorResponse("Vous avez gagné ".$res["gain"]." mais le casino ne possède pas assez d'argent pour payer", 400);
+        // Gain
+        if($res["gain"] !== 0) {
+            $r = $this->casinoService->payGain($user, $res["gain"], $casino, "roulette");
+            switch($r) {
+                case -1:
+                    return $this->errorService->errorResponse("Vous avez gagné ".$res["gain"]." mais le casino ne possède pas assez d'argent pour payer", 400);
+                case -2;
+                    return $this->errorService->errorResponse("Vous avez gagné ".$res["gain"]." mais vous ne pouvez pas stocker cette somme d'argent", 400);
             }
-            $this->moneyService->credit($user, $res["gain"], "Victoire au jeu de la roulette au casino : ".$casino->company->name);
-            $this->companyService->removeFromSafe($casino->company, $res["gain"]);
-        } else if($res["gain"] !== 0) {
-            return $this->errorService->errorResponse("Vous avez gagné ".$res["gain"]." mais vous ne pouvez pas stocker cette somme d'argent", 400);
+        }
+
+        $res["pay"] = $totalPay;
+
+        return $res;
+    }
+
+    public function playDice(DiceRequest $request, Casino $casino) {
+        $bet = $request->input("bet");
+        $user = User::find(Auth::id());
+        $isVIP = $user->vipCasinoTicket($casino) !== null;
+        $maxBet = $casino->diceMaxBet;
+        $maxVIPBet = $casino->diceVIPMaxBet;
+
+        if(!$this->casinoService->checkBet($bet, $maxBet, $maxVIPBet, $isVIP)) {
+            return $this->errorService->errorResponse("Votre mise doit être inférieur à ".($isVIP ? $maxVIPBet : $maxBet), 422);
+        }
+        if(!$this->moneyService->checkMoney($user, $bet)) {
+            return $this->errorService->errorResponse("Vous n'avez pas assez d'argent pour jouer cette mise", 422);
+        }
+
+        // Paiement
+        $totalPay = $this->casinoService->playerPayGame($user, $bet, "dé", $casino);
+
+        // Partie
+        $res = $this->casinoService->dice($casino, $bet, $isVIP);
+        $this->casinoService->saveParty("dé", $bet, $res["gain"], $casino, $user);
+
+        // Gain
+        if($res["gain"] !== 0) {
+            $r = $this->casinoService->payGain($user, $res["gain"], $casino, "dé");
+            switch($r) {
+                case -1:
+                    return $this->errorService->errorResponse("Vous avez gagné ".$res["gain"]." mais le casino ne possède pas assez d'argent pour payer", 400);
+                case -2;
+                    return $this->errorService->errorResponse("Vous avez gagné ".$res["gain"]." mais vous ne pouvez pas stocker cette somme d'argent", 400);
+            }
         }
 
         $res["pay"] = $totalPay;
