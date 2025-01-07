@@ -58,11 +58,11 @@ class CasinoService extends CompanyService {
         return $nb1.$nb2.$nb3;
     }
 
-    public function playDice(): int {
+    public function playDice(): array {
         $nb1 = random_int(1, 6);
         $nb2 = random_int(1, 6);
 
-        return $nb1 + $nb2;
+        return [$nb1, $nb2];
     }
 
     public function playPoker(): array {
@@ -126,11 +126,12 @@ class CasinoService extends CompanyService {
 
     public function dice(Casino $casino, float $bet, bool $isVip): array {
         $res = $this->playDice();
+        $total = array_sum($res);
         $gain = 0;
         $goal = $isVip ? $casino->diceVIPGoal : $casino->diceGoal;
         $coef = $isVip ? $casino->diceVIPWinMultiplicator : $casino->diceWinMultiplicator;
 
-        if($res === $goal) {
+        if($total === $goal) {
             $gain = round($bet * $coef, 2);
         }
 
