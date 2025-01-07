@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Class;
-class Card {
+
+use JsonSerializable;
+class Card implements JsonSerializable {
 
     private int $color;
     private int $value;
@@ -16,5 +18,12 @@ class Card {
     }
     public function getValue() {
         return $this->value;
+    }
+
+    public function jsonSerialize(): array {
+        return [
+            "color" => $this->getColor(),
+            "value" => $this->getValue(),
+        ];
     }
 }

@@ -199,9 +199,25 @@ class CasinoController extends Controller
         }
 
         // Paiement
-        //$totalPay = $this->casinoService->playerPayGame($user, $bet, "solo poker", $casino);
+        $totalPay = $this->casinoService->playerPayGame($user, $bet, "solo poker", $casino);
 
         // Partie
         $res = $this->casinoService->poker($casino, $bet, $isVIP);
+        $this->casinoService->saveParty("solo poker", $bet, $res["gain"], $casino, $user);
+
+        // Gain
+        if($res["gain"] != 0) {
+            $r = $this->casinoService->payGain($user, $res["gain"], $casino, "solo poker");
+            switch($r) {
+                case -1:
+                    return $this->errorService->errorResponse("Vous avez gagné ".$res["gain"]." mais le casino ne possède pas assez d'argent pour payer", 400);
+                case -2;
+                    return $this->errorService->errorResponse("Vous avez gagné ".$res["gain"]." mais vous ne pouvez pas stocker cette somme d'argent", 400);
+            }
+        }
+
+        $res["pay"] = $totalPay;
+
+        return $res;
     }
 }

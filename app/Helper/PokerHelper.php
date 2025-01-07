@@ -6,6 +6,14 @@ use App\Class\Card;
 
 class PokerHelper {
 
+    private static function groupByValue(array $cards) {
+        $res = [];
+        foreach($cards as $card) {
+            $res[$card->getValue()][] = $card;
+        }
+        return $res;
+    }
+
     public static function checkRoyalFlush(array $cards) {
         $isStraightFlush = self::checkStraightFlush($cards);
         if(!$isStraightFlush) {
@@ -25,18 +33,28 @@ class PokerHelper {
 
 
     public static function checkFourOfKind(array $cards) {
-        $four = $cards[0]->getValue();
-        $other = null;
-
-        foreach($cards as $card) {
-            if($card->getValue() !== $four) {
-                if($other !== null) {
-                    return false;
-                }
-                $other = $card->getValue();
+        $groupedCards = self::groupByValue($cards);
+        foreach($groupedCards as $value => $group) {
+            if(count($group) === 4) {
+                return true;
             }
         }
-        return true;
+        return false;
+    }
+
+    public static function checkFullHouse(array $cards) {
+        $groupedCards = self::groupByValue($cards);
+        $hasThree = false;
+        $hasPair = false;
+
+        foreach($groupedCards as $value => $group) {
+            if(count($group) === 3) {
+                $hasThree = true;
+            } else if(count($group) === 2) {
+                $hasPair = true;
+            }
+        }
+        return $hasThree && $hasPair;
     }
 
     public static function checkFlush(array $cards) {
@@ -70,6 +88,40 @@ class PokerHelper {
         }
 
         return true;
+    }
+
+    public static function checkThreeOfAKind(array $cards) {
+        $groupedCards = self::groupByValue($cards);
+        foreach($groupedCards as $value => $group) {
+            if(count($group) === 3) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static function checkTwoPair(array $cards) {
+        $groupedCards = self::groupByValue($cards);
+        $asAlreadyPair = false;
+        foreach($groupedCards as $value => $group) {
+            if(count($group) === 2) {
+                if($asAlreadyPair) {
+                    return true;
+                }
+                $asAlreadyPair = true;
+            }
+        }
+        return false;
+    }
+
+    public static function checkPair(array $cards) {
+        $groupedCards = self::groupByValue($cards);
+        foreach($groupedCards as $value => $group) {
+            if(count($group) === 2) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

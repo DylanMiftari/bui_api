@@ -73,12 +73,6 @@ class CasinoService extends CompanyService {
             $cards[] = $cardPack->drawCard();
         }
 
-        $cards[0] = new Card(1, 1);
-        $cards[1] = new Card(1, 1);
-        $cards[2] = new Card(1, 1);
-        $cards[3] = new Card(1, 4);
-        $cards[4] = new Card(1, 1);
-
         return $cards;
     }
 
@@ -148,10 +142,48 @@ class CasinoService extends CompanyService {
 
     public function poker(Casino $casino, float $bet, bool $isVip): array {
         $res = $this->playPoker();
-        dump($res);
-        dd(PokerHelper::checkFourOfKind($res));
+        $gain = 0;
+        $hand = "";
+        $coef = 0;
 
-        return [];
+        if(PokerHelper::checkRoyalFlush($res)) {
+            $coef = $isVip ? $casino->royalFlushVIPMultiplicator : $casino->royalFlushMultiplicator;
+            $hand = "Quinte flush royale";
+        } else if(PokerHelper::checkStraightFlush($res)) {
+            $coef = $isVip ? $casino->straightFlushVIPMultiplicator : $casino->straightFlushMultiplicator;
+            $hand = "Quinte flush";
+        } else if(PokerHelper::checkFourOfKind($res)) {
+            $coef = $isVip ? $casino->fourOfAKindVIPMultiplicator : $casino->fourOfAKindMultiplicator;
+            $hand = "Carré";
+        } else if(PokerHelper::checkFullHouse($res)) {
+            $coef = $isVip ? $casino->fullHouseVIPMultiplicator : $casino->fullHouseMultiplicator;
+            $hand = "Full";
+        } else if(PokerHelper::checkFlush($res)) {
+            $coef = $isVip ? $casino->flushVIPMultiplicator : $casino->flushMultiplicator;
+            $hand = "Couleur";
+        } else if(PokerHelper::checkStraight($res)) {
+            $coef = $isVip ? $casino->straightVIPMultiplicator : $casino->straightMultiplicator;
+            $hand = "Suite"; 
+        } else if(PokerHelper::checkThreeOfAKind($res)) {
+            $coef = $isVip ? $casino->threeOfAKindVIPMultiplicator : $casino->threeOfAKindMultiplicator;
+            $hand = "Brelan";
+        } else if(PokerHelper::checkTwoPair($res)) {
+            $coef = $isVip ? $casino->twoPairVIPMultiplicator : $casino->twoPairMultiplicator;
+            $hand = "Double paire";
+        } else if(PokerHelper::checkPair($res)) {
+            $coef = $isVip ? $casino->onePairVIPMultiplicator : $casino->onePairMultiplicator;
+            $hand = "Paire";
+        } else {
+            $coef = $isVip ? $casino->nothingVIPMultiplicator : $casino->nothingMultiplicator;
+        }
+
+        $gain = round($bet * $coef, 2);
+
+        return [
+            "res" => json_decode(json_encode($res), true),
+            "gain" => $gain,
+            "hand" => $hand
+        ];
     }
 
     public function saveParty(string $gameName, int $bet, int $winnings, Casino $casino, User $user) {
