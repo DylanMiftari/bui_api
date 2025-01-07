@@ -166,7 +166,7 @@ class CasinoController extends Controller
 
         // Partie
         $res = $this->casinoService->dice($casino, $bet, $isVIP);
-        $this->casinoService->saveParty("dé", $bet, $res["gain"], $casino, $user);
+        $this->casinoService->saveParty("dice", $bet, $res["gain"], $casino, $user);
 
         // Gain
         if($res["gain"] !== 0) {
