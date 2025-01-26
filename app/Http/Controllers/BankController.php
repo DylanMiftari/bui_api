@@ -178,6 +178,18 @@ class BankController extends Controller
         }
     }
 
+    public function rejectCreditRequest(EditCreditRequestRequest $request, Bank $bank, CreditRequest $creditRequest) {
+        if(!in_array($creditRequest->status, ["wait on bank"])) {
+            return $this->errorService->errorResponse("Vous ne pouvez pas rejeter cette demande de prêt pour le moment", 403);
+        }
+        try {
+            $this->bankCreditService->updateCreditRequest($creditRequest, status: "reject", description: $request->input("description"));
+            return response()->json(["status" => "success"]);
+        } catch(Exception $e) {
+            return response()->json(["status" => "error"]);
+        }
+    }
+
     public function updateCreditRequestFromClient(EditCreditRequestRequest $request, Bank $bank, CreditRequest $creditRequest) {
         if(!in_array($creditRequest->status, ["wait on client"])) {
             return $this->errorService->errorResponse("Vous ne pouvez pas modifier cette demande de prêt pour le moment", 403);

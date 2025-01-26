@@ -23,7 +23,10 @@ Route::middleware("auth:sanctum")->group(function() {
 
     Route::get("/client/{company}", [BankController::class, "showClient"])->middleware(CheckCompanyClientMiddleware::class);
 
-    Route::patch("/{bank}/credit-request/{creditRequest}", [BankController::class, "updateCreditRequest"])->middleware(CheckBankMiddleware::class);;
+    Route::prefix("/{bank}/credit-request/{creditRequest}")->middleware(CheckBankMiddleware::class)->group(function() {
+        Route::patch("/", [BankController::class, "updateCreditRequest"]);
+        Route::patch("/reject", [BankController::class, "rejectCreditRequest"]);
+    });
 
     
     Route::prefix("/client/{bank}")->middleware(CheckBankClientMiddleware::class)->group(function() {

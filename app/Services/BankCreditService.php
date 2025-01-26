@@ -19,8 +19,8 @@ class BankCreditService {
         ]);
     }
 
-    public function updateCreditRequest(CreditRequest $creditRequest, float|null $rate, float|null $money, float|null $weeklyPayments, 
-    string|null $description, string|null $status=null) {
+    public function updateCreditRequest(CreditRequest $creditRequest, float|null $rate = null, float|null $money = null, float|null $weeklyPayments = null, 
+    string|null $description = null, string|null $status=null) {
         if($rate !== null) {
             $creditRequest->rate = $rate;
         }
