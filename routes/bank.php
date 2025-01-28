@@ -26,6 +26,7 @@ Route::middleware("auth:sanctum")->group(function() {
     Route::prefix("/{bank}/credit-request/{creditRequest}")->middleware(CheckBankMiddleware::class)->group(function() {
         Route::patch("/", [BankController::class, "updateCreditRequest"]);
         Route::patch("/reject", [BankController::class, "rejectCreditRequest"]);
+        Route::delete("/", [BankController::class, "deleteCreditRequest"]);
     });
 
     
@@ -44,6 +45,8 @@ Route::middleware("auth:sanctum")->group(function() {
                 Route::post("/", [BankController::class, "createCreditRequest"]);
 
                 Route::patch("/{creditRequest}", [BankController::class, "updateCreditRequestFromClient"]);
+                Route::patch("/{creditRequest}/cancel", [BankController::class, "cancelCreditRequest"]);
+                Route::delete("/{creditRequest}", [BankController::class, "deleteCreditRequestFromClient"]);
             });
         });
     });

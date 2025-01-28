@@ -137,11 +137,11 @@ class BankController extends Controller
     }
 
     public function getCreditRequest(Bank $bank) {
-        return $bank->creditRequests()->where("playerId", Auth::id())->get();
+        return $bank->creditRequests()->where("playerId", Auth::id())->whereNot("status", "deleted")->get();
     }
 
     public function getAllCreditRequests(Bank $bank) {
-        $creditRequests = $bank->creditRequests()->with('player')->get();
+        $creditRequests = $bank->creditRequests()->whereNot("status", "deleted")->with('player')->get();
         $creditRequests->each(function($creditRequest) {
             $creditRequest->player->makeHidden('playerMoney');
         });
@@ -190,6 +190,18 @@ class BankController extends Controller
         }
     }
 
+    public function deleteCreditRequest(Bank $bank, CreditRequest $creditRequest) {
+        if(!in_array($creditRequest->status, ["cancel"])) {
+            return $this->errorService->errorResponse("Vous ne pouvez pas supprimer cette demande de prêt pour le moment", 403);
+        }
+        try {
+            $this->bankCreditService->updateCreditRequest($creditRequest, status: "deleted");
+            return response()->json(["status" => "success"]);
+        } catch(Exception $e) {
+            return response()->json(["status" => "error"]);
+        }
+    }
+
     public function updateCreditRequestFromClient(EditCreditRequestRequest $request, Bank $bank, CreditRequest $creditRequest) {
         if(!in_array($creditRequest->status, ["wait on client"])) {
             return $this->errorService->errorResponse("Vous ne pouvez pas modifier cette demande de prêt pour le moment", 403);
@@ -201,6 +213,36 @@ class BankController extends Controller
         try {
             $this->bankCreditService->updateCreditRequest($creditRequest, $request->input("rate"), $request->input("money"), 
             $request->input("weeklyPayments"), $request->input("description"), $request->input("status"));
+            return response()->json(["status" => "success"]);
+        } catch(Exception $e) {
+            return response()->json(["status" => "error"]);
+        }
+    }
+
+    public function cancelCreditRequest(EditCreditRequestRequest $request, Bank $bank, CreditRequest $creditRequest) {
+        if(!in_array($creditRequest->status, ["wait on client"])) {
+            return $this->errorService->errorResponse("Vous ne pouvez pas annuler cette demande de prêt pour le moment", 403);
+        }
+        if($creditRequest->playerId != Auth::id()) {
+            return $this->errorService->errorResponse("Vous ne pouvez modifier que votre propre demande de prêt", 403);
+        }
+        try {
+            $this->bankCreditService->updateCreditRequest($creditRequest, status: "cancel", description: $request->input("description"));
+            return response()->json(["status" => "success"]);
+        } catch(Exception $e) {
+            return response()->json(["status" => "error"]);
+        }
+    }
+
+    public function deleteCreditRequestFromClient(Bank $bank, CreditRequest $creditRequest) {
+        if(!in_array($creditRequest->status, ["reject"])) {
+            return $this->errorService->errorResponse("Vous ne pouvez pas supprimer cette demande de prêt pour le moment", 403);
+        }
+        if($creditRequest->playerId != Auth::id()) {
+            return $this->errorService->errorResponse("Vous ne pouvez supprimer que votre propre demande de prêt", 403);
+        }
+        try {
+            $this->bankCreditService->updateCreditRequest($creditRequest, status: "deleted");
             return response()->json(["status" => "success"]);
         } catch(Exception $e) {
             return response()->json(["status" => "error"]);
